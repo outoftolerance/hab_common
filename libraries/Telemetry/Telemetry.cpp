@@ -4,6 +4,7 @@
 Telemetry::Telemetry()
 {
 	gps_serial_ = NULL;
+	gps_fix_status_ = false;
 }
 
 Telemetry::Telemetry(Stream* gps_serial, int gps_fix_pin) :
@@ -19,7 +20,10 @@ Telemetry::Telemetry(Stream* gps_serial, int gps_fix_pin) :
 bool Telemetry::init()
 {
 	//Initialise the GPS
-	static_cast<HardwareSerial&>(gps_serial_).begin(GPS_SERIAL_BAUD);
+	if(gps_serial_ != NULL)
+	{
+		static_cast<HardwareSerial&>(*gps_serial_).begin(GPS_SERIAL_BAUD);
+	}
 
 	//Initialise each sensor
 	if(!accelerometer_.begin())
@@ -43,7 +47,11 @@ bool Telemetry::init()
 
 void Telemetry::update_()
 {
-	updateGps_();
+	if(gps_serial_ != NULL)
+	{
+		updateGps_();
+	}
+
 	updateAccelerometer_();
 	updateGyroscope_();
 	updateMagnetometer_();
@@ -124,14 +132,25 @@ bool Telemetry::get(TelemetryStruct& telemetry)
 	altitude_barometric = barometer_.pressureToAltitude((float)SENSORS_PRESSURE_SEALEVELHPA, barometer_data_.pressure, temperature);
 
 	//Assign to output struct
-	telemetry.latitude = (float)gps_.location.lat();
-	telemetry.longitude = (float)gps_.location.lng();
-	telemetry.altitude = (float)gps_.altitude.meters();
+	if(gps_serial_ != NULL)
+	{
+		telemetry.latitude = (float)gps_.location.lat();
+		telemetry.longitude = (float)gps_.location.lng();
+		telemetry.altitude = (float)gps_.altitude.meters();		
+		telemetry.course = (float)gps_.course.deg();
+	}
+	else
+	{
+		telemetry.latitude = 0;
+		telemetry.longitude = 0;
+		telemetry.altitude = 0;
+		telemetry.course = 0;
+	}
+	
 	telemetry.altitude_barometric = altitude_barometric;
 	telemetry.roll = orientation_.roll;
 	telemetry.pitch = orientation_.pitch;
 	telemetry.heading = orientation_.heading;
-	telemetry.course = (float)gps_.course.deg();
 	telemetry.temperature = temperature;
 	telemetry.pressure = barometer_data_.pressure;
 
@@ -162,10 +181,13 @@ int Telemetry::getGpsString(char string[])
 {
 	int i = 0;
 
-	while(gps_serial_buffer_->available())
+	if(gps_serial_ != NULL)
 	{
-		string[i] = gps_serial_buffer_->pop();
-		i++;
+		while(gps_serial_buffer_->available())
+		{
+			string[i] = gps_serial_buffer_->pop();
+			i++;
+		}
 	}
 
 	return i;
@@ -178,7 +200,14 @@ bool Telemetry::getGpsFixStatus()
 
 float Telemetry::getGpsHdop()
 {
-	return (float)gps_.hdop.hdop();
+	if(gps_serial_ != NULL)
+	{
+		return (float)gps_.hdop.hdop();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 long Telemetry::getGpsDateTime()

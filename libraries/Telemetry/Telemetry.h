@@ -55,7 +55,7 @@ class Telemetry
 		 * @brief      Telemetry class constructor with GPS
 		 * @param      gps_stream  Pointer to the Stream object for the GPS serial port
 		 */
-		Telemetry(Stream& gps_stream, int gps_fix_pin);
+		Telemetry(Stream* gps_stream, int gps_fix_pin);
 
 		/**
 		 * @brief      Initialises all variables and objects to their default value/state
