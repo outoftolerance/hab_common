@@ -34,4 +34,5 @@ The project also depends on a few externally developed libraries as listed here.
 - Adafruit BMP085
 - Adafruit L3GD20
 - Adafruit LSM303DLHC
-
+- Adafruit FXOS8700
+- Adafruit FXAS21002C
