@@ -1,13 +1,23 @@
 #include "Telemetry.h"
 
 /*------------------------------Constructor Methods------------------------------*/
-Telemetry::Telemetry()
+Telemetry::Telemetry(IMU_TYPES imu_type)
 {
 	gps_serial_ = NULL;
 	gps_fix_status_ = false;
+
+	switch(imu_type)
+	{
+		case IMU_TYPES::IMU_TYPE_ADAFRUIT_10DOF:
+			imu_ = new Imu_10dof();
+			break;
+		case IMU_TYPES::IMU_TYPE_ADAFRUIT_9DOF:
+			imu_ = new Imu_9dof();
+			break;
+	}
 }
 
-Telemetry::Telemetry(Stream* gps_serial, int gps_fix_pin) :
+Telemetry::Telemetry(IMU_TYPES imu_type, Stream* gps_serial, int gps_fix_pin) :
 	gps_serial_(gps_serial),
 	gps_fix_pin_(gps_fix_pin)
 {
@@ -16,6 +26,27 @@ Telemetry::Telemetry(Stream* gps_serial, int gps_fix_pin) :
 }
 
 /*------------------------------Private Methods------------------------------*/
+
+void Telemetry::update_()
+{
+	if(gps_serial_ != NULL)
+	{
+		char c;
+
+		while(gps_serial_->available())
+		{
+			c = gps_serial_->read();
+			gps_.encode(c);
+			gps_serial_buffer_->push(c);
+		}
+
+		gps_fix_status_ = digitalRead(gps_fix_pin_);
+	}
+
+	imu_.update();
+}
+
+/*------------------------------Public Methods------------------------------*/
 
 bool Telemetry::init()
 {
@@ -26,17 +57,7 @@ bool Telemetry::init()
 	}
 
 	//Initialise each sensor
-	if(!accelerometer_.begin())
-	{
-		return false;
-	}
-
-	if(!magnetometer_.begin())
-	{
-		return false;
-	}
-
-	if(!barometer_.begin())
+	if(!imu.begin())
 	{
 		return false;
 	}
@@ -45,91 +66,10 @@ bool Telemetry::init()
 	return true;
 }
 
-void Telemetry::update_()
-{
-	if(gps_serial_ != NULL)
-	{
-		updateGps_();
-	}
-
-	updateAccelerometer_();
-	updateGyroscope_();
-	updateMagnetometer_();
-	updateBarometer_();
-}
-
-void Telemetry::updateGps_()
-{
-	char c;
-
-	while(gps_serial_->available())
-	{
-		c = gps_serial_->read();
-		gps_.encode(c);
-		gps_serial_buffer_->push(c);
-	}
-
-	gps_fix_status_ = digitalRead(gps_fix_pin_);
-}
-
-void Telemetry::updateAccelerometer_()
-{
-	accelerometer_.getEvent(&accelerometer_data_);
-}
-
-void Telemetry::updateGyroscope_()
-{
-	//gyroscope_.getEvent(&gyroscope_data_);
-}
-
-void Telemetry::updateMagnetometer_()
-{
-	magnetometer_.getEvent(&magnetometer_data_);
-}
-
-void Telemetry::updateBarometer_()
-{
-	barometer_.getEvent(&barometer_data_);
-}
-
-/*------------------------------Public Methods------------------------------*/
-
 bool Telemetry::get(TelemetryStruct& telemetry)
 {
 	//Update all sensor data
 	update_();
-
-	//Calculate attitude from accelerometer
-	if (!sensor_board_.accelGetOrientation(&accelerometer_data_, &orientation_))
-	{
-		return false;
-	}
-
-	//Correct magnetometer values based on tilt
-	if (!sensor_board_.magTiltCompensation(SENSOR_AXIS_Z, &magnetometer_data_, &accelerometer_data_))
-	{
-	  return false;
-	}
-
-	//Calculate heading from magnetometer
-	if (!sensor_board_.magGetOrientation(SENSOR_AXIS_Z, &magnetometer_data_, &orientation_))
-	{
-		return false;
-	}
-
-	//Calculate altitude from barometer
-	if (!barometer_data_.pressure)
-	{
-		return false;
-	}
-
-	//Get ambient temperature in C
-	float temperature;
-	barometer_.getTemperature(&temperature);
-
-	//Convert atmospheric pressure, SLP and temp to altitude
-	float altitude_barometric;
-	altitude_barometric = barometer_.pressureToAltitude((float)SENSORS_PRESSURE_SEALEVELHPA, barometer_data_.pressure, temperature);
 
 	//Assign to output struct
 	if(gps_serial_ != NULL)
@@ -147,12 +87,12 @@ bool Telemetry::get(TelemetryStruct& telemetry)
 		telemetry.course = 0;
 	}
 	
-	telemetry.altitude_barometric = altitude_barometric;
-	telemetry.roll = orientation_.roll;
-	telemetry.pitch = orientation_.pitch;
-	telemetry.heading = orientation_.heading;
-	telemetry.temperature = temperature;
-	telemetry.pressure = barometer_data_.pressure;
+	telemetry.altitude_barometric = imu_.getBarometricAltitude();
+	telemetry.roll = imu_.getRoll();
+	telemetry.pitch = imu_.getPitch();
+	telemetry.heading = imu_.getHeading();
+	telemetry.temperature = imu_.getTemperature();
+	telemetry.pressure = imu_.getPressure();
 
 	return true;
 }

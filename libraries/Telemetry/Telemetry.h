@@ -4,15 +4,13 @@
 #include <Buffer.h>
 #include <Wire.h>
 #include <TinyGPS++.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_LSM303_U.h>
-#include <Adafruit_BMP085_U.h>
-#include <Adafruit_L3GD20_U.h>
-#include <Adafruit_10DOF.h>
+#include <Imu.h>
+#include <Imu_9dof.h>
+#include <Imu_10dof.h>
 
 #define GPS_SERIAL_BAUD 9600
 #define GPS_SERIAL_BUFFER_SIZE 64
-	
+
 /**
  * @brief Structure for axis related data (e.g. acceleration, velocity, gyro, mag, etc...)
  */
@@ -49,13 +47,13 @@ class Telemetry
 		/*
 		 * @brief      Telemetry class constructor without GPS
 		 */
-		Telemetry();
+		Telemetry(IMU_TYPES imu_type);
 
 		/**
 		 * @brief      Telemetry class constructor with GPS
 		 * @param      gps_stream  Pointer to the Stream object for the GPS serial port
 		 */
-		Telemetry(Stream* gps_stream, int gps_fix_pin);
+		Telemetry(IMU_TYPES imu_type, Stream* gps_stream, int gps_fix_pin);
 
 		/**
 		 * @brief      Initialises all variables and objects to their default value/state
@@ -131,47 +129,12 @@ class Telemetry
 		 */
 		void update_();
 
-		/**
-		 * @brief      Updates with the latest GPS data
-		 */
-		void updateGps_();
-
-		/**
-		 * @brief      Updates with the latest accelerometer data
-		 */
-		void updateAccelerometer_();
-
-		/**
-		 * @brief      Updates with the latest gyroscope data
-		 */
-		void updateGyroscope_();
-
-		/**
-		 * @brief      Updates with the latest magnetometer data
-		 */
-		void updateMagnetometer_();
-
-		/**
-		 * @brief      Updates with the latest baronmeter data
-		 */
-		void updateBarometer_();
-
 		TinyGPSPlus gps_;									/**< Defines Tiny GPS object */
 		Stream* gps_serial_;			        			/**< Defines Stream object for GPS device serial port */
 		Buffer* gps_serial_buffer_;							/**< Buffer to store received GPS serial data in for sending out to other devices */
 		int gps_fix_pin_;									/**< Pin that senses GPS fix status */
 		bool gps_fix_status_;								/**< Current fix status of the GPS unit */
-
-		Adafruit_10DOF sensor_board_ = Adafruit_10DOF(); 										/**< 10 degree of freedom sensor board */
-		Adafruit_LSM303_Accel_Unified accelerometer_ = Adafruit_LSM303_Accel_Unified(30301); 	/**< accelerometer/gyroscope private object */
-		Adafruit_LSM303_Mag_Unified magnetometer_ = Adafruit_LSM303_Mag_Unified(30302); 		/**< magnetometer private object */
-		Adafruit_BMP085_Unified barometer_ = Adafruit_BMP085_Unified(18001); 					/**< barometer private object */
-
-		sensors_event_t accelerometer_data_; 	/**< Struct for latest accelerometer data */
-		//sensors_event_t gyroscope_data_;		/**< Struct for latest gyroscope data */
-		sensors_event_t magnetometer_data_; 	/**< Struct for latest magenetometer data */
-		sensors_event_t barometer_data_; 		/**< Struct for latest barometer data */
-		sensors_vec_t orientation_; 			/**< Orientation struct needed by Adafruit sensor library for some functions */
+		Imu* imu_;
 };
 
 #endif
