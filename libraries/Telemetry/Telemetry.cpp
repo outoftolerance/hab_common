@@ -1,7 +1,12 @@
 #include "Telemetry.h"
 
 /*------------------------------Constructor Methods------------------------------*/
-Telemetry::Telemetry(Stream& gps_serial, int gps_fix_pin) :
+Telemetry::Telemetry()
+{
+	gps_serial_ = NULL;
+}
+
+Telemetry::Telemetry(Stream* gps_serial, int gps_fix_pin) :
 	gps_serial_(gps_serial),
 	gps_fix_pin_(gps_fix_pin)
 {
@@ -49,9 +54,9 @@ void Telemetry::updateGps_()
 {
 	char c;
 
-	while(gps_serial_.available())
+	while(gps_serial_->available())
 	{
-		c = gps_serial_.read();
+		c = gps_serial_->read();
 		gps_.encode(c);
 		gps_serial_buffer_->push(c);
 	}

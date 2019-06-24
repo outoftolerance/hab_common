@@ -46,8 +46,13 @@ typedef struct TelemetryStruct
 class Telemetry
 {
 	public:
+		/*
+		 * @brief      Telemetry class constructor without GPS
+		 */
+		Telemetry();
+
 		/**
-		 * @brief      Telemetry class constructor
+		 * @brief      Telemetry class constructor with GPS
 		 * @param      gps_stream  Pointer to the Stream object for the GPS serial port
 		 */
 		Telemetry(Stream& gps_stream, int gps_fix_pin);
@@ -152,7 +157,7 @@ class Telemetry
 		void updateBarometer_();
 
 		TinyGPSPlus gps_;									/**< Defines Tiny GPS object */
-		Stream& gps_serial_;			        			/**< Defines Stream object for GPS device serial port */
+		Stream* gps_serial_;			        			/**< Defines Stream object for GPS device serial port */
 		Buffer* gps_serial_buffer_;							/**< Buffer to store received GPS serial data in for sending out to other devices */
 		int gps_fix_pin_;									/**< Pin that senses GPS fix status */
 		bool gps_fix_status_;								/**< Current fix status of the GPS unit */
