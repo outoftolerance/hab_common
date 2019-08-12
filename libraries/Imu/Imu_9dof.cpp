@@ -8,7 +8,7 @@ Imu_9dof::Imu_9dof()
 bool Imu_9dof::begin()
 {
 	//Start gyroscope
-	if!(gyroscope_.begin())
+	if(!gyroscope_.begin())
 	{
 		return false;
 	}
@@ -18,6 +18,9 @@ bool Imu_9dof::begin()
 	{
 		return false;
 	}
+
+	//Start the filter
+	ahrs_filter_.begin(10);
 
 	return true;
 }

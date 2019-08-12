@@ -70,26 +70,33 @@ void SimpleHDLC::receive()
 	{
 		//Read new byte from data_stream_
 		new_byte = data_stream_.read();
+		Serial.print("Data Available: ");
+		Serial.println(new_byte);
 
 		//Check for start of new frame
 		if(new_byte == FRAME_FLAG)
 		{
+			//Reset escape byte if start/end of frame
 			if(escape_byte_ == true)
 			{
 				escape_byte_ = false;
 			}
-			//A valid frame has been found
+			//A valid frame flag has been found
 			else if( (frame_position_ >= 2) && ( frame_crc_ == (uint8_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
 			{
+				Serial.println("Found the end of the frame!");
 				//Decode new frame into message
+				Serial.println("Decode the frame into a message.");
 				hdlcMessage new_message;
 				deserializeMessage_(new_message, frame_receive_buffer_, (uint8_t)(frame_position_ - 2));
 
 				//Execute message callback function
+				Serial.println("Execute callback on message!");
 				(*handleMessageCallback_)(new_message);
 			}
 
 			//Start of a new frame! Reset CRC and position
+			Serial.println("Found new frame!");
 			frame_position_ = 0;
 			frame_crc_ = CRC16_CCITT_INIT_VAL;
 			continue;
@@ -98,31 +105,44 @@ void SimpleHDLC::receive()
 		//Check if we need to escape a byte
 		if(escape_byte_)
 		{
+			Serial.println("Inverting byte!");
 			escape_byte_ = false;
 			new_byte ^= INVERT_BYTE;
 		}
 		else if(new_byte == CONTROL_ESCAPE_BYTE)
 		{
+			Serial.println("Found escape flag, must invert next byte!");
 			escape_byte_ = true;
 			continue;
 		}
 
 		//Add the new byte to the frame receive buffer
+		Serial.println("Adding byte to frame receive buffer.");
 		frame_receive_buffer_[frame_position_] = new_byte;
 
-		//Update the CRC if we are at last 2 positions into the frame
-		if(frame_position_-2 >= 0) 
+		//Update the CRC if we are at last 2 positions into the frame. \
+		//CRC should lag two elemts behind latest (so as not to update CRC with itself)
+		if(frame_position_ >= 2)
 		{
-			frame_crc_ = _crc_ccitt_update(frame_crc_, frame_receive_buffer_[frame_position_-2]);
+			Serial.println("Updating CRC with new received byte.");
+			frame_crc_ = _crc_ccitt_update(frame_crc_, frame_receive_buffer_[frame_position_ - 2]);
+			Serial.print("CRC is now: ");
+			Serial.print(high(frame_crc_));
+			Serial.print(", ");
+			Serial.print(low(frame_crc_));
+			Serial.println("");
 		}
 
 		//Increment position within frame
+		Serial.print("Increment frame position to: ");
 		frame_position_++;
+		Serial.println(frame_position_);
 
 		//Check if we hit the max length of the frame
 		if(frame_position_ == MAX_FRAME_LENGTH)
 		{
 			//Reset to start of frame and start again
+			Serial.println("Went over frame max length, resetting!");
 			frame_position_ = 0;
 			frame_crc_ = CRC16_CCITT_INIT_VAL;
 		}

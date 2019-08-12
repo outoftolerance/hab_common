@@ -43,7 +43,7 @@ void Telemetry::update_()
 		gps_fix_status_ = digitalRead(gps_fix_pin_);
 	}
 
-	imu_.update();
+	imu_->update();
 }
 
 /*------------------------------Public Methods------------------------------*/
@@ -57,7 +57,7 @@ bool Telemetry::init()
 	}
 
 	//Initialise each sensor
-	if(!imu.begin())
+	if(!imu_->begin())
 	{
 		return false;
 	}
@@ -87,12 +87,12 @@ bool Telemetry::get(TelemetryStruct& telemetry)
 		telemetry.course = 0;
 	}
 	
-	telemetry.altitude_barometric = imu_.getBarometricAltitude();
-	telemetry.roll = imu_.getRoll();
-	telemetry.pitch = imu_.getPitch();
-	telemetry.heading = imu_.getHeading();
-	telemetry.temperature = imu_.getTemperature();
-	telemetry.pressure = imu_.getPressure();
+	telemetry.altitude_barometric = imu_->getBarometricAltitude();
+	telemetry.roll = imu_->getRoll();
+	telemetry.pitch = imu_->getPitch();
+	telemetry.heading = imu_->getHeading();
+	telemetry.temperature = imu_->getTemperature();
+	telemetry.pressure = imu_->getPressure();
 
 	return true;
 }

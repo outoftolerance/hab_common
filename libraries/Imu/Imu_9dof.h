@@ -40,8 +40,8 @@ class Imu_9dof : public Imu
 
 		// Soft iron error compensation matrix
 		float mag_softiron_matrix_[3][3] = { {  0.943,  0.011,  0.020 },
-		                                    {  0.022,  0.918, -0.008 },
-		                                    {  0.020, -0.008,  1.156 } };
+		                                     {  0.022,  0.918, -0.008 },
+		                                     {  0.020, -0.008,  1.156 } };
 
 		// Offsets applied to compensate for gyro zero-drift error for x/y/z
 		float gyro_zero_offsets_[3] = { 0.0F, 0.0F, 0.0F };

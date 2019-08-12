@@ -62,7 +62,7 @@ bool Imu_10dof::update()
 	barometer_.getTemperature(&temperature_);
 
 	//Convert atmospheric pressure, SLP and temp to altitude
-	altitude_barometric_ = barometer_.pressureToAltitude((float)SENSORS_PRESSURE_SEALEVELHPA, barometer_data_.pressure, temperature);
+	altitude_barometric_ = barometer_.pressureToAltitude((float)SENSORS_PRESSURE_SEALEVELHPA, barometer_data_.pressure, temperature_);
 
 	return true;
 }
