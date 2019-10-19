@@ -28,83 +28,33 @@ void Log::event(LOG_LEVELS level, const char message[])
     if(level >= log_level_)
     {
         String preamble;
-
-        if(clock_->isrunning() && use_rtc_)
-        {
-            DateTime now = clock_->now();
-            preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + " " + String(now.minute()) + " " + String(now.second());
-            preamble += " | ";
-            preamble += now.unixtime();
-            preamble += " | ";
-        }
-        else
-        {
-            long now = millis();
-            preamble = "0000/00/00 " + String(numberOfHours(now / 1000l)) + ":" + String(numberOfMinutes(now / 1000l)) + ":" + String(numberOfSeconds(now / 1000l)) + " | 0 | ";
-        }
-
-        switch(level)
-        {
-            case LOG_LEVELS::DEBUG:
-                preamble += "DEBUG   | ";
-                break;
-            case LOG_LEVELS::INFO:
-                preamble += "INFO    | ";
-                break;
-            case LOG_LEVELS::WARNING:
-                preamble += "WARNING | ";
-                break;
-            case LOG_LEVELS::ERROR:
-                preamble += "ERROR   | ";
-                break;
-            case LOG_LEVELS::FATAL:
-                preamble += "FATAL   | ";
-                break;
-        }
+        getPreamble_(level, preamble);
 
         output_.print(preamble);
         output_.println(message);
     }
 }
 
-void Log::event(LOG_LEVELS level, const char message[], float data)
+void Log::event(LOG_LEVELS level, const char message[], const float data)
 {
     if(level >= log_level_)
     {
         String preamble;
+        getPreamble_(level, preamble);
 
-        if(clock_->isrunning() && use_rtc_)
-        {
-            DateTime now = clock_->now();
-            preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + " " + String(now.minute()) + " " + String(now.second());
-            preamble += " | ";
-            preamble += now.unixtime();
-            preamble += " | ";
-        }
-        else
-        {
-            long now = millis();
-            preamble = "0000/00/00 " + String(numberOfHours(now / 1000l)) + ":" + String(numberOfMinutes(now / 1000l)) + ":" + String(numberOfSeconds(now / 1000l)) + " | 0 | ";
-        }
+        output_.print(preamble);
+        output_.print(message);
+        output_.print(": ");
+        output_.println(data, 6);   //set level of float precision to 6 decimals
+    }
+}
 
-        switch(level)
-        {
-            case LOG_LEVELS::DEBUG:
-                preamble = "DEBUG   | ";
-                break;
-            case LOG_LEVELS::INFO:
-                preamble = "INFO    | ";
-                break;
-            case LOG_LEVELS::WARNING:
-                preamble = "WARNING | ";
-                break;
-            case LOG_LEVELS::ERROR:
-                preamble = "ERROR   | ";
-                break;
-            case LOG_LEVELS::FATAL:
-                preamble = "FATAL   | ";
-                break;
-        }
+void Log::event(LOG_LEVELS level, const char message[], const int data)
+{
+    if(level >= log_level_)
+    {
+        String preamble;
+        getPreamble_(level, preamble);
 
         output_.print(preamble);
         output_.print(message);
@@ -113,48 +63,38 @@ void Log::event(LOG_LEVELS level, const char message[], float data)
     }
 }
 
-void Log::event(LOG_LEVELS level, const char message[], int data)
+void Log::getPreamble_(LOG_LEVELS level, String& preamble)
 {
-    if(level >= log_level_)
+    if(clock_->isrunning() && use_rtc_)
     {
-        String preamble;
+        DateTime now = clock_->now();
+        preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + " " + String(now.minute()) + " " + String(now.second());
+        preamble += " | ";
+        preamble += now.unixtime();
+        preamble += " | ";
+    }
+    else
+    {
+        long now = millis();
+        preamble = "0000/00/00 " + String(numberOfHours(now / 1000l)) + ":" + String(numberOfMinutes(now / 1000l)) + ":" + String(numberOfSeconds(now / 1000l)) + " | 0 | ";
+    }
 
-        if(clock_->isrunning() && use_rtc_)
-        {
-            DateTime now = clock_->now();
-            preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + " " + String(now.minute()) + " " + String(now.second());
-            preamble += " | ";
-            preamble += now.unixtime();
-            preamble += " | ";
-        }
-        else
-        {
-            long now = millis();
-            preamble = "0000/00/00 " + String(numberOfHours(now / 1000l)) + ":" + String(numberOfMinutes(now / 1000l)) + ":" + String(numberOfSeconds(now / 1000l)) + " | 0 | ";
-        }
-
-        switch(level)
-        {
-            case LOG_LEVELS::DEBUG:
-                preamble = "DEBUG   | ";
-                break;
-            case LOG_LEVELS::INFO:
-                preamble = "INFO    | ";
-                break;
-            case LOG_LEVELS::WARNING:
-                preamble = "WARNING | ";
-                break;
-            case LOG_LEVELS::ERROR:
-                preamble = "ERROR   | ";
-                break;
-            case LOG_LEVELS::FATAL:
-                preamble = "FATAL   | ";
-                break;
-        }
-
-        output_.print(preamble);
-        output_.print(message);
-        output_.print(": ");
-        output_.println(data);
+    switch(level)
+    {
+        case LOG_LEVELS::DEBUG:
+            preamble += "DEBUG   | ";
+            break;
+        case LOG_LEVELS::INFO:
+            preamble += "INFO    | ";
+            break;
+        case LOG_LEVELS::WARNING:
+            preamble += "WARNING | ";
+            break;
+        case LOG_LEVELS::ERROR:
+            preamble += "ERROR   | ";
+            break;
+        case LOG_LEVELS::FATAL:
+            preamble += "FATAL   | ";
+            break;
     }
 }

@@ -66,11 +66,16 @@ static inline uint16_t _crc_xmodem_update(uint16_t crc, uint8_t data)
 static inline uint16_t _crc_ccitt_update (uint16_t crc, uint8_t data) __attribute__((always_inline, unused));
 static inline uint16_t _crc_ccitt_update (uint16_t crc, uint8_t data)
 {
+    Serial.println("CRC Update 1: " + data);
     data ^= (crc & 255);
+    //Serial.println("CRC Update 2: " + data);
     data ^= data << 4;
+    //Serial.println("CRC Update 3: " + data);
 
-    return ((((uint16_t)data << 8) | (crc >> 8)) ^ (uint8_t)(data >> 4) 
-        ^ ((uint16_t)data << 3));
+    uint16_t result = ((((uint16_t)data << 8) | (crc >> 8)) ^ (uint8_t)(data >> 4) ^ ((uint16_t)data << 3));
+    //Serial.println("CRC Update 4: " + result);
+
+    return result;
 }
 
 static inline uint8_t _crc_ibutton_update(uint8_t crc, uint8_t data) __attribute__((always_inline, unused));

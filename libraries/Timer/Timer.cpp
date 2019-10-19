@@ -8,7 +8,7 @@ Timer::Timer()
 	is_set_ = false;
 }
 
-Timer::Timer(unsigned long interval)
+Timer::Timer(const unsigned long interval)
 {
 	interval_ = interval;
 	is_set_ = true;
@@ -16,7 +16,7 @@ Timer::Timer(unsigned long interval)
 
 /*------------------------------ Public Methods------------------------------*/
 
-bool Timer::setInterval(unsigned long interval)
+bool Timer::setInterval(const unsigned long interval)
 {
 	interval_ = interval;
 	is_set_ = true;

@@ -80,7 +80,7 @@ enum Ds1307SqwPinMode { OFF = 0x00, ON = 0x80, SquareWave1HZ = 0x10, SquareWave4
 
 class RTC_DS1307 {
 public:
-    boolean begin(void);
+    bool begin(void);
     static void adjust(const DateTime& dt);
     uint8_t isrunning(void);
     static DateTime now();
@@ -97,7 +97,7 @@ enum Ds3231SqwPinMode { DS3231_OFF = 0x01, DS3231_SquareWave1Hz = 0x00, DS3231_S
 
 class RTC_DS3231 {
 public:
-    boolean begin(void);
+    bool begin(void);
     bool isrunning(void);
     static void adjust(const DateTime& dt);
     bool lostPower(void);
@@ -114,9 +114,9 @@ enum Pcf8523SqwPinMode { PCF8523_OFF = 7, PCF8523_SquareWave1HZ = 6, PCF8523_Squ
 
 class RTC_PCF8523 {
 public:
-    boolean begin(void);
+    bool begin(void);
     void adjust(const DateTime& dt);
-    boolean initialized(void);
+    bool initialized(void);
     static DateTime now();
 
     Pcf8523SqwPinMode readSqwPinMode();

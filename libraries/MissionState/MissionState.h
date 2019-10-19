@@ -104,28 +104,28 @@ class MissionState
          * @brief Update the mission state with latest information
          * @return bool True if successfully updated, false if error reported
          */
-        bool update(TelemetryStruct* telemetry, bool launch_switch, bool silence_switch);
+        bool update(const TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch);
 
         /**
          * @brief Allows setting of the mission state to a particular state
          * @return bool True if success, false if error reported
          */
-        bool set(int state);
+        bool set(const MISSION_STATES state);
 
         /**
          * @brief Returns the current state of the mission
          * @return MissionStates enumerated mission state
          */
-        int get();
+        MISSION_STATES get();
 
         /**
          * @brief Returns the current state of the functions related to mission states
-         * @return MissionStateFunction type with values based on current mission state
+         * @param MissionStateFunction type with values based on current mission state
          */
-        MissionStateFunction getFunction();
+        void getFunction(MissionStateFunction& function);
 
     private:
-        int current_mission_state_;                             /**< Current enumerated state of the mission */
+        MISSION_STATES current_mission_state_;                  /**< Current enumerated state of the mission */
         MissionStateFunction current_mission_state_function_;   /**< Functionality of the current mission state */
         Timer recovered_timeout_;                               /**< Timer for recovered mode time-out */
         Timer silence_timeout_;                                 /**< Timer for silence button time-out */

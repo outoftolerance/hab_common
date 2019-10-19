@@ -44,6 +44,9 @@ class Log {
         */
         Log(Stream& port, RTC_DS3231* rtc, LOG_LEVELS log_level);
 
+        /**
+         * @brief      Initializes the logger
+         */
         void init();
 
         /**
@@ -67,6 +70,12 @@ class Log {
         void event(LOG_LEVELS level, const char message[], int data);
 
     private:
+        /**
+         * @brief      Gets the preamble for a log string
+         * @param      preamble  The preamble string to modify
+         */
+        void getPreamble_(LOG_LEVELS level, String& preamble);
+
         Stream& output_;            /**< Reference to stream used for output */
         RTC_DS3231* clock_;         /**< Pointer to RTC used for timing, not a reference because clock is optional */
         int log_level_;             /**< Sets logging level */

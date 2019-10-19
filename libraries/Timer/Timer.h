@@ -25,14 +25,14 @@ public:
          * @brief Timer constructor function with interval input
          * param interval The timer interval in ms
          */
-	Timer(unsigned long interval);
+	Timer(const unsigned long interval);
 
         /**
          * @brief Timer constructor function
          * param interval The timer interval in ms
          * @return True if interval set successfully
          */
-	bool setInterval(unsigned long interval);
+	bool setInterval(const unsigned long interval);
 
         /**
          * @brief Timer constructor function

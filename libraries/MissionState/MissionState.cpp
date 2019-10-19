@@ -23,7 +23,7 @@ MissionState::~MissionState()
 	landing_timeout_.forceReset();
 }
 
-bool MissionState::update(TelemetryStruct* telemetry, bool launch_switch, bool silence_switch)
+bool MissionState::update(const TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
 {
 	switch(current_mission_state_)
 	{
@@ -37,12 +37,12 @@ bool MissionState::update(TelemetryStruct* telemetry, bool launch_switch, bool s
 			{
 				current_mission_state_ = MISSION_STATES::STAGING;
 			}
-			else if(telemetry->altitude >= TERMINAL_ALTITUDE)
+			else if(telemetry.altitude >= TERMINAL_ALTITUDE)
 			{
 				current_mission_state_ = MISSION_STATES::ASCENDING;
 			}
 		case MISSION_STATES::ASCENDING:
-			if(telemetry->altitude < previous_altitude_)
+			if(telemetry.altitude < previous_altitude_)
 			{
 				if(descent_timeout_.isStarted())
 				{
@@ -67,14 +67,14 @@ bool MissionState::update(TelemetryStruct* telemetry, bool launch_switch, bool s
 				}
 			}
 
-			previous_altitude_ = telemetry->altitude;
+			previous_altitude_ = telemetry.altitude;
 		case MISSION_STATES::DESCENDING:
-			if(telemetry->altitude <= TERMINAL_ALTITUDE)
+			if(telemetry.altitude <= TERMINAL_ALTITUDE)
 			{
 				current_mission_state_ = MISSION_STATES::LANDING;
 			}
 		case MISSION_STATES::LANDING:
-			if(telemetry->altitude <= previous_altitude_ + LANDED_ALTITUDE_DEADZONE && telemetry->altitude >= previous_altitude_ - LANDED_ALTITUDE_DEADZONE)
+			if(telemetry.altitude <= previous_altitude_ + LANDED_ALTITUDE_DEADZONE && telemetry.altitude >= previous_altitude_ - LANDED_ALTITUDE_DEADZONE)
 			{
 				if(landing_timeout_.isStarted())
 				{
@@ -99,7 +99,7 @@ bool MissionState::update(TelemetryStruct* telemetry, bool launch_switch, bool s
 				}
 			}
 
-			previous_altitude_ = telemetry->altitude;
+			previous_altitude_ = telemetry.altitude;
 		case MISSION_STATES::RECOVERY:
 			if(silence_switch)
 			{
@@ -144,22 +144,20 @@ bool MissionState::update(TelemetryStruct* telemetry, bool launch_switch, bool s
 	return true;
 }
 
-bool MissionState::set(int state)
+bool MissionState::set(const MISSION_STATES state)
 {
 	current_mission_state_ = state;
 
 	return true;
 }
 
-int MissionState::get()
+MISSION_STATES MissionState::get()
 {
 	return current_mission_state_;
 }
 
-MissionStateFunction MissionState::getFunction()
+void MissionState::getFunction(MissionStateFunction& function)
 {
-	MissionStateFunction function;
-
 	switch(current_mission_state_)
 	{
 		case MISSION_STATES::STAGING:
@@ -212,6 +210,4 @@ MissionStateFunction MissionState::getFunction()
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
 			function.led_enabled = RECOVERY_LED_ENABLED;
 	}
-
-	return function;
 }
