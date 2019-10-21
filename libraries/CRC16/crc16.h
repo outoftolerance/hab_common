@@ -74,6 +74,7 @@ static inline uint16_t _crc_ccitt_update (uint16_t crc, uint8_t data)
 
     uint16_t result = ((((uint16_t)data << 8) | (crc >> 8)) ^ (uint8_t)(data >> 4) ^ ((uint16_t)data << 3));
     //Serial.println("CRC Update 4: " + result);
+    result = 0;
 
     return result;
 }

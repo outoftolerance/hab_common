@@ -10,15 +10,23 @@ SimpleHDLC::SimpleHDLC(Stream& input_stream, message_callback_type callback_func
 	handleMessageCallback_(callback_function)
 {
 	frame_position_ = 0;
-    frame_crc_ = CRC16_CCITT_INIT_VAL;
-    escape_byte_ = false;
+    invert_next_byte_ = false;
 }
 
 /*------------------------------Private Methods------------------------------*/
 
-void SimpleHDLC::sendByte_(uint8_t data)
+void SimpleHDLC::sendByte_(const uint8_t data)
 {
-	data_stream_.write(data);
+	//Write byte to output stream but check for reserved characters
+	if((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG))
+    {
+        data_stream_.write(CONTROL_ESCAPE_BYTE);
+        data_stream_.write(data ^ INVERT_BYTE);
+    }
+    else
+    {
+    	data_stream_.write(data);
+    }
 }
 
 void SimpleHDLC::serializeMessage_(const hdlcMessage& message, uint8_t buffer[], uint8_t buffer_length)
@@ -64,6 +72,7 @@ void SimpleHDLC::deserializeMessage_(hdlcMessage& message, const uint8_t buffer[
 void SimpleHDLC::receive()
 {
 	uint8_t new_byte;
+	uint16_t frame_crc16;
 
 	//Loop through all the available bytes in the serial port
 	while(data_stream_.available() > 0)
@@ -76,15 +85,53 @@ void SimpleHDLC::receive()
 		//Check for start of new frame
 		if(new_byte == FRAME_FLAG)
 		{
-			//Reset escape byte if start/end of frame
-			if(escape_byte_ == true)
-			{
-				escape_byte_ = false;
-			}
-			//A valid frame flag has been found
-			else if( (frame_position_ >= 2) && ( frame_crc_ == (uint8_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
+			//Start of a new frame! Reset control variables
+			Serial.println("Found new frame!");
+			invert_next_byte_ = false;
+			frame_position_ = 0;
+
+			//Skip adding this to the frame buffer
+			continue;
+		}
+		//Check if the next byte needs to be inverted
+		else if (new_byte == CONTROL_ESCAPE_BYTE)
+		{
+			Serial.println("Found escape byte, next one needs to be inverted");
+			invert_next_byte_ = true;
+
+			//Skip adding this to the frame buffer
+			continue;
+		}
+		//Check if this byte needs inverting
+		else if(invert_next_byte_ == true)
+		{
+			Serial.println("Inverting byte!");
+			new_byte ^= INVERT_BYTE;
+			invert_next_byte_ = false;
+		}
+
+		//Add the new byte to the frame receive buffer
+		Serial.println("Adding byte to frame receive buffer.");
+		frame_receive_buffer_[frame_position_] = new_byte;
+		frame_position_++;
+
+		//Validate if we have found a complete frame with CRC, need at least 2 bytes for valid frame
+		if(frame_position_ >= 2)
+		{
+			/**
+			 * Here we get away with frame_position - 2 because data is bytes and function takes 
+			 * in # of bytes in input data array, usually want to do sizeof(data[])
+			 */
+			//Calculate the CRC16 for received data
+			frame_crc16 = fast_crc16_.kermit(frame_receive_buffer_, frame_position_ - 2);
+			Serial.print("CRC16 is at: ");
+			Serial.println(frame_crc16, HEX);
+
+			//Check if a valid frame is found
+			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
 			{
 				Serial.println("Found the end of the frame!");
+
 				//Decode new frame into message
 				Serial.println("Decode the frame into a message.");
 				hdlcMessage new_message;
@@ -94,110 +141,45 @@ void SimpleHDLC::receive()
 				Serial.println("Execute callback on message!");
 				(*handleMessageCallback_)(new_message);
 			}
-
-			//Start of a new frame! Reset CRC and position
-			Serial.println("Found new frame!");
-			frame_position_ = 0;
-			frame_crc_ = CRC16_CCITT_INIT_VAL;
-			continue;
 		}
-
-		//Check if we need to escape a byte
-		if(escape_byte_)
-		{
-			Serial.println("Inverting byte!");
-			escape_byte_ = false;
-			new_byte ^= INVERT_BYTE;
-		}
-		else if(new_byte == CONTROL_ESCAPE_BYTE)
-		{
-			Serial.println("Found escape flag, must invert next byte!");
-			escape_byte_ = true;
-			continue;
-		}
-
-		//Add the new byte to the frame receive buffer
-		Serial.println("Adding byte to frame receive buffer.");
-		frame_receive_buffer_[frame_position_] = new_byte;
-
-		//Update the CRC if we are at last 2 positions into the frame. \
-		//CRC should lag two elemts behind latest (so as not to update CRC with itself)
-		if(frame_position_ >= 2)
-		{
-			Serial.println("Updating CRC with new received byte.");
-			frame_crc_ = _crc_ccitt_update(frame_crc_, frame_receive_buffer_[frame_position_ - 2]);
-			Serial.print("CRC is now: ");
-			Serial.print(high(frame_crc_));
-			Serial.print(", ");
-			Serial.print(low(frame_crc_));
-			Serial.println("");
-		}
-
-		//Increment position within frame
-		Serial.print("Increment frame position to: ");
-		frame_position_++;
-		Serial.println(frame_position_);
 
 		//Check if we hit the max length of the frame
-		if(frame_position_ == MAX_FRAME_LENGTH)
+		if(frame_position_ > MAX_FRAME_LENGTH)
 		{
 			//Reset to start of frame and start again
 			Serial.println("Went over frame max length, resetting!");
 			frame_position_ = 0;
-			frame_crc_ = CRC16_CCITT_INIT_VAL;
+			invert_next_byte_ = false;
 		}
 	}
 }
 
 void SimpleHDLC::send(const hdlcMessage& message)
 {
-	uint8_t data;
-    uint16_t fcs = CRC16_CCITT_INIT_VAL;
+    uint16_t frame_crc16;
 
     //Convert message to serial bytes
-    uint8_t buffer[MAX_FRAME_LENGTH];
+    uint8_t buffer[message.length + 2];
     serializeMessage_(message, buffer, message.length + 2);
 
+    //Calculate frame CRC16
+    frame_crc16 = fast_crc16_.kermit(buffer, sizeof(buffer));
+
     //Send initial frame flag to open frame
-    sendByte_((uint8_t)FRAME_FLAG);
+    sendByte_(FRAME_FLAG);
 
     //Loop through the serialized data buffer and send all bytes making sure to convert
     for(int i = 0; i < message.length + 2; i++)
     {
-        data = buffer[i];
-        fcs = _crc_ccitt_update(fcs, data);
-
-        if((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG))
-        {
-            sendByte_((uint8_t)CONTROL_ESCAPE_BYTE);
-            data ^= INVERT_BYTE;
-        }
-
-        sendByte_((uint8_t)data);
+        sendByte_(buffer[i]);
     }
 
-    //Get bottom 8 bits of CRC and send making sure to convert
-    data = low(fcs);
+    //Send bottom 8 bits of CRC
+    sendByte_(low(frame_crc16));
 
-    if((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG))
-    {
-        sendByte_((uint8_t)CONTROL_ESCAPE_BYTE);
-        data ^= (uint8_t)INVERT_BYTE;
-    }
+    //Send top 8 bits of CRC
+    sendByte_(high(frame_crc16));
 
-    sendByte_((uint8_t)data);
-
-    //Get top 8 bits of CRC and send making sure to convert
-    data = high(fcs);
-
-    if((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG))
-    {
-        sendByte_(CONTROL_ESCAPE_BYTE);
-        data ^= INVERT_BYTE;
-    }
-
-    sendByte_(data);
-
-    //Send final frame flag to close frame
+    //Send final frame flag to close frame (don't need this?)
     sendByte_(FRAME_FLAG);
 }

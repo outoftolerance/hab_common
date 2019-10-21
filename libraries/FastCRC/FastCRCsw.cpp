@@ -35,7 +35,14 @@
 
 #include "FastCRC.h"
 #include "FastCRC_cpu.h"
-#include "FastCRC_tables.h"
+
+#if !defined(__SAM3X8E__)
+	#if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1062__)
+		#include "FastCRC_tables.h"
+	#else
+		#include "FastCRC_tables_ARM.h"
+	#endif
+#endif
 
 
 // ================= 7-BIT CRC ===================
@@ -264,12 +271,19 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 
 	uint16_t crc = seed;
 
+	//Serial.println(len);
+	//Serial.println(*data);
+	//Serial.println((uintptr_t)data);
+	//Serial.println((uintptr_t)data & 3);
+	
 	while (((uintptr_t)data & 3) && len) {
+		Serial.println("1");
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
 	while (len >= 16) {
+		Serial.println("2");
 		len -= 16;
 		crc_n4(crc, ((uint32_t *)data)[0], crc_table_kermit);
 		crc_n4(crc, ((uint32_t *)data)[1], crc_table_kermit);
@@ -279,6 +293,7 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
+		Serial.println("3");
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 	}
 
