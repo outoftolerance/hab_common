@@ -96,7 +96,6 @@ void SimpleHDLC::receive()
 		//Check if the next byte needs to be inverted
 		else if (new_byte == CONTROL_ESCAPE_BYTE)
 		{
-			Serial.println("Found escape byte, next one needs to be inverted");
 			invert_next_byte_ = true;
 
 			//Skip adding this to the frame buffer
@@ -105,13 +104,11 @@ void SimpleHDLC::receive()
 		//Check if this byte needs inverting
 		else if(invert_next_byte_ == true)
 		{
-			Serial.println("Inverting byte!");
 			new_byte ^= INVERT_BYTE;
 			invert_next_byte_ = false;
 		}
 
 		//Add the new byte to the frame receive buffer
-		Serial.println("Adding byte to frame receive buffer.");
 		frame_receive_buffer_[frame_position_] = new_byte;
 		frame_position_++;
 
@@ -130,10 +127,7 @@ void SimpleHDLC::receive()
 			//Check if a valid frame is found
 			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
 			{
-				Serial.println("Found the end of the frame!");
-
 				//Decode new frame into message
-				Serial.println("Decode the frame into a message.");
 				hdlcMessage new_message;
 				deserializeMessage_(new_message, frame_receive_buffer_, (uint8_t)(frame_position_ - 2));
 
