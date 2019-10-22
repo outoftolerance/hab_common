@@ -68,7 +68,7 @@ void Log::getPreamble_(LOG_LEVELS level, String& preamble)
     if(clock_->isrunning() && use_rtc_)
     {
         DateTime now = clock_->now();
-        preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + " " + String(now.minute()) + " " + String(now.second());
+        preamble = String(now.year()) + "/" + String(now.month()) + "/" + String(now.day()) + " " + String(now.hour()) + ":" + String(now.minute()) + ":" + String(now.second());
         preamble += " | ";
         preamble += now.unixtime();
         preamble += " | ";

@@ -4,7 +4,14 @@
 DataLog::DataLog(int chip_select) :
   chip_select_(chip_select)
 {
+	use_rtc_ = false;
+}
 
+DataLog::DataLog(int chip_select, RTC_DS3231* rtc) :
+  chip_select_(chip_select),
+  clock_(rtc)
+{
+	use_rtc_ = true;
 }
 
 /*------------------------------Public Methods------------------------------*/
@@ -14,6 +21,7 @@ bool DataLog::init(const String& filename, const String& header)
 	header.toCharArray(header_, MAX_HEADER_LENGTH);
 
 	if (!SD.begin(chip_select_)) {
+		Serial.println("Failed to init SD card");
     	return false;
   	}
 
@@ -21,6 +29,7 @@ bool DataLog::init(const String& filename, const String& header)
 
   	if(!log_file_)
   	{
+  		Serial.println("Failed to init file");
   		return false;
   	}
 
@@ -35,6 +44,20 @@ bool DataLog::entry(const float data[], int size, bool newline)
 {
 	int i;
 	String data_string;
+
+	if(clock_->isrunning() && use_rtc_)
+    {
+		DateTime now = clock_->now();
+
+		data_string += String(now.unixtime());
+		data_string += ",";
+	}
+	else
+	{
+		long now = millis();
+		data_string += String(now / 1000l);
+		data_string += ",";
+	}
 
 	for(i = 0; i < size; i++)
 	{
@@ -68,6 +91,20 @@ bool DataLog::entry(const int data[], int size, bool newline)
 {
 	int i;
 	String data_string;
+
+	if(clock_->isrunning() && use_rtc_)
+    {
+		DateTime now = clock_->now();
+
+		data_string += String(now.unixtime());
+		data_string += ",";
+	}
+	else
+	{
+		long now = millis();
+		data_string += String(now / 1000l);
+		data_string += ",";
+	}
 
 	for(i = 0; i < size; i++)
 	{
