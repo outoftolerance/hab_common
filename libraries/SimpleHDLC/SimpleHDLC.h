@@ -52,10 +52,10 @@ class SimpleHDLC
     private:
         /**
          * @brief      Sends a single byte through the serial port
-         *
          * @param[in]  data  The data bute to be sent
+         * @param[in]  special If special character then checks will be skipped
          */
-        void sendByte_(const uint8_t data);
+        void sendByte_(const uint8_t data, bool special);
 
         /**
          * @brief      Serializes an HDLC message as a series of bytes

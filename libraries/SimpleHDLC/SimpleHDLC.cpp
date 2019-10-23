@@ -15,10 +15,10 @@ SimpleHDLC::SimpleHDLC(Stream& input_stream, message_callback_type callback_func
 
 /*------------------------------Private Methods------------------------------*/
 
-void SimpleHDLC::sendByte_(const uint8_t data)
+void SimpleHDLC::sendByte_(const uint8_t data, bool special)
 {
 	//Write byte to output stream but check for reserved characters
-	if((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG))
+	if(!special && ((data == CONTROL_ESCAPE_BYTE) || (data == FRAME_FLAG)))
     {
         data_stream_.write(CONTROL_ESCAPE_BYTE);
         data_stream_.write(data ^ INVERT_BYTE);
@@ -79,14 +79,11 @@ void SimpleHDLC::receive()
 	{
 		//Read new byte from data_stream_
 		new_byte = data_stream_.read();
-		Serial.print("Data Available: ");
-		Serial.println(new_byte);
 
 		//Check for start of new frame
 		if(new_byte == FRAME_FLAG)
 		{
 			//Start of a new frame! Reset control variables
-			Serial.println("Found new frame!");
 			invert_next_byte_ = false;
 			frame_position_ = 0;
 
@@ -121,18 +118,15 @@ void SimpleHDLC::receive()
 			 */
 			//Calculate the CRC16 for received data
 			frame_crc16 = fast_crc16_.kermit(frame_receive_buffer_, frame_position_ - 2);
-			Serial.print("CRC16 is at: ");
-			Serial.println(frame_crc16, HEX);
 
 			//Check if a valid frame is found
-			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
+			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 2] << 8 ) | (frame_receive_buffer_[frame_position_ - 1] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
 			{
 				//Decode new frame into message
 				hdlcMessage new_message;
 				deserializeMessage_(new_message, frame_receive_buffer_, (uint8_t)(frame_position_ - 2));
 
 				//Execute message callback function
-				Serial.println("Execute callback on message!");
 				(*handleMessageCallback_)(new_message);
 			}
 		}
@@ -141,7 +135,6 @@ void SimpleHDLC::receive()
 		if(frame_position_ > MAX_FRAME_LENGTH)
 		{
 			//Reset to start of frame and start again
-			Serial.println("Went over frame max length, resetting!");
 			frame_position_ = 0;
 			invert_next_byte_ = false;
 		}
@@ -160,20 +153,20 @@ void SimpleHDLC::send(const hdlcMessage& message)
     frame_crc16 = fast_crc16_.kermit(buffer, sizeof(buffer));
 
     //Send initial frame flag to open frame
-    sendByte_(FRAME_FLAG);
+    sendByte_(FRAME_FLAG, true);
 
     //Loop through the serialized data buffer and send all bytes making sure to convert
     for(int i = 0; i < message.length + 2; i++)
     {
-        sendByte_(buffer[i]);
+        sendByte_(buffer[i], false);
     }
 
     //Send bottom 8 bits of CRC
-    sendByte_(low(frame_crc16));
+    sendByte_(low(frame_crc16), false);
 
     //Send top 8 bits of CRC
-    sendByte_(high(frame_crc16));
+    sendByte_(high(frame_crc16), false);
 
     //Send final frame flag to close frame (don't need this?)
-    sendByte_(FRAME_FLAG);
+    sendByte_(FRAME_FLAG, true);
 }

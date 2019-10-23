@@ -276,14 +276,14 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 	//Serial.println((uintptr_t)data);
 	//Serial.println((uintptr_t)data & 3);
 	
-	while (((uintptr_t)data & 3) && len) {
-		Serial.println("1");
+	while (((uintptr_t)data & 3) && len) 
+	{
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
-	while (len >= 16) {
-		Serial.println("2");
+	while (len >= 16) 
+	{
 		len -= 16;
 		crc_n4(crc, ((uint32_t *)data)[0], crc_table_kermit);
 		crc_n4(crc, ((uint32_t *)data)[1], crc_table_kermit);
@@ -292,8 +292,8 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 		data += 16;
 	}
 
-	while (len--) {
-		Serial.println("3");
+	while (len--) 
+	{
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 	}
 
