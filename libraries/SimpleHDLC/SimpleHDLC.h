@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 #include <stdint.h>
-#include <crc16.h>
 #include <FastCRC.h>
 
 #define FRAME_FLAG 0x7e             /**< Message start flag */
