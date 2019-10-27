@@ -17,9 +17,9 @@
  */
 typedef struct hdlcMessage
 {
-    uint8_t command;
-    uint8_t length;
-    uint8_t payload[MAX_FRAME_LENGTH - 8];
+    uint8_t command;                        /**< The type of message */
+    uint8_t length;                         /**< Must include the command and length itself */
+    uint8_t payload[MAX_FRAME_LENGTH - 8];  /**< The data of the message */
 } hdlcMessage;
 
 typedef void (* message_callback_type)(hdlcMessage message);
