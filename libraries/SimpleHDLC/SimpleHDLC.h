@@ -11,12 +11,15 @@
 #define INVERT_BYTE 0x20            /**<  */
 #define CRC16_CCITT_INIT_VAL 0xFFFF /**< Initial value for CRC checksum */
 #define MAX_FRAME_LENGTH 64         /**< Maximum length of a frame including start and end flags */
+#define FRAME_HEADER_LENGTH 4       /**< Length of header (node id, node type, command, payload length)
 
 /**
  * Defines the structure of the message
  */
 typedef struct hdlcMessage
 {
+    uint8_t node_id;
+    uint8_t node_type;
     uint8_t command;                        /**< The type of message */
     uint8_t length;                         /**< Must include the command and length itself */
     uint8_t payload[MAX_FRAME_LENGTH - 8];  /**< The data of the message */

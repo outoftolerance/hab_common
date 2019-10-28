@@ -35,15 +35,23 @@ void SimpleHDLC::serializeMessage_(const hdlcMessage& message, uint8_t buffer[],
 	{
 		if(i == 0)
 		{
-			buffer[i] = message.command;
+			buffer[i] = message.node_id;
 		}
 		else if (i == 1)
+		{
+			buffer[i] = message.node_type;
+		}
+		else if(i == 2)
+		{
+			buffer[i] = message.command;
+		}
+		else if (i == 3)
 		{
 			buffer[i] = message.length;
 		}
 		else
 		{
-			buffer[i] = message.payload[i - 2];
+			buffer[i] = message.payload[i - FRAME_HEADER_LENGTH];
 		}
 	}
 }
@@ -54,15 +62,23 @@ void SimpleHDLC::deserializeMessage_(hdlcMessage& message, const uint8_t buffer[
 	{
 		if(i == 0)
 		{
-			message.command = buffer[i];
+			message.node_id = buffer[i];
 		}
 		else if(i == 1)
+		{
+			message.node_type = buffer[i];
+		}
+		else if(i == 2)
+		{
+			message.command = buffer[i];
+		}
+		else if(i == 3)
 		{
 			message.length = buffer[i];
 		}
 		else
 		{
-			message.payload[i - 2] = buffer[i];
+			message.payload[i - FRAME_HEADER_LENGTH] = buffer[i];
 		}
 	}
 }
@@ -109,8 +125,8 @@ void SimpleHDLC::receive()
 		frame_receive_buffer_[frame_position_] = new_byte;
 		frame_position_++;
 
-		//Validate if we have found a complete frame with CRC, need at least 2 bytes for valid frame
-		if(frame_position_ >= 2)
+		//Validate if we have found a complete frame with CRC, need at least FRAME_HEADER_LENGTH bytes for valid frame
+		if(frame_position_ >= FRAME_HEADER_LENGTH)
 		{
 			/**
 			 * Here we get away with frame_position - 2 because data is bytes and function takes 
@@ -146,8 +162,8 @@ void SimpleHDLC::send(const hdlcMessage& message)
     uint16_t frame_crc16;
 
     //Convert message to serial bytes
-    uint8_t buffer[message.length + 2];
-    serializeMessage_(message, buffer, message.length + 2);
+    uint8_t buffer[message.length + FRAME_HEADER_LENGTH];
+    serializeMessage_(message, buffer, message.length + FRAME_HEADER_LENGTH);
 
     //Calculate frame CRC16
     frame_crc16 = fast_crc16_.kermit(buffer, sizeof(buffer));
@@ -156,7 +172,7 @@ void SimpleHDLC::send(const hdlcMessage& message)
     sendByte_(FRAME_FLAG, true);
 
     //Loop through the serialized data buffer and send all bytes making sure to convert
-    for(int i = 0; i < message.length + 2; i++)
+    for(int i = 0; i < message.length + FRAME_HEADER_LENGTH; i++)
     {
         sendByte_(buffer[i], false);
     }
