@@ -38,13 +38,13 @@ bool MissionState::update(const TelemetryStruct& telemetry, const bool launch_sw
 			{
 				current_mission_state_ = MISSION_STATES::STAGING;
 			}
-			else if(telemetry.altitude_relative.value >= TERMINAL_ALTITUDE)
+			else if(telemetry.altitude_relative >= TERMINAL_ALTITUDE)
 			{
 				current_mission_state_ = MISSION_STATES::ASCENDING;
 			}
 			break;
 		case MISSION_STATES::ASCENDING:
-			if(telemetry.altitude.value < previous_altitude_)
+			if(telemetry.altitude < previous_altitude_)
 			{
 				if(descent_timeout_.isStarted())
 				{
@@ -69,16 +69,16 @@ bool MissionState::update(const TelemetryStruct& telemetry, const bool launch_sw
 				}
 			}
 
-			previous_altitude_ = telemetry.altitude.value;
+			previous_altitude_ = telemetry.altitude;
 			break;
 		case MISSION_STATES::DESCENDING:
-			if(telemetry.altitude_relative.value <= TERMINAL_ALTITUDE)
+			if(telemetry.altitude_relative <= TERMINAL_ALTITUDE)
 			{
 				current_mission_state_ = MISSION_STATES::LANDING;
 			}
 			break;
 		case MISSION_STATES::LANDING:
-			if(telemetry.altitude.value <= previous_altitude_ + LANDED_ALTITUDE_DEADZONE && telemetry.altitude.value >= previous_altitude_ - LANDED_ALTITUDE_DEADZONE)
+			if(telemetry.altitude <= previous_altitude_ + LANDED_ALTITUDE_DEADZONE && telemetry.altitude >= previous_altitude_ - LANDED_ALTITUDE_DEADZONE)
 			{
 				if(landing_timeout_.isStarted())
 				{
@@ -103,7 +103,7 @@ bool MissionState::update(const TelemetryStruct& telemetry, const bool launch_sw
 				}
 			}
 
-			previous_altitude_ = telemetry.altitude.value;
+			previous_altitude_ = telemetry.altitude;
 			break;
 		case MISSION_STATES::RECOVERY:
 			if(silence_switch)

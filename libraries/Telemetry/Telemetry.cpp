@@ -96,48 +96,48 @@ bool Telemetry::get(TelemetryStruct& telemetry)
     update_();
 
     //Grab data not dependent on GPS
-    telemetry.altitude_barometric.value = imu_->getBarometricAltitude();
-    telemetry.roll.value = imu_->getRoll();
-    telemetry.pitch.value = imu_->getPitch();
-    telemetry.heading.value = imu_->getHeading();
-    telemetry.temperature.value = imu_->getTemperature();
-    telemetry.pressure.value = imu_->getPressure();
+    telemetry.altitude_barometric = imu_->getBarometricAltitude();
+    telemetry.roll = imu_->getRoll();
+    telemetry.pitch = imu_->getPitch();
+    telemetry.heading = imu_->getHeading();
+    telemetry.temperature = imu_->getTemperature();
+    telemetry.pressure = imu_->getPressure();
 
     //Assign to output struct
     if(gps_serial_ != NULL)
     {
-        telemetry.latitude.value = (float)gps_.location.lat();
-        telemetry.longitude.value = (float)gps_.location.lng();
-        telemetry.altitude.value = (float)gps_.altitude.meters();
-        telemetry.course.value = (float)gps_.course.deg();
-        telemetry.velocity_vertical.value = (float)gps_.speed.mps();
-        telemetry.velocity_horizontal.value = 0.0;
+        telemetry.latitude = (float)gps_.location.lat();
+        telemetry.longitude = (float)gps_.location.lng();
+        telemetry.altitude = (float)gps_.altitude.meters();
+        telemetry.course = (float)gps_.course.deg();
+        telemetry.velocity_vertical = (float)gps_.speed.mps();
+        telemetry.velocity_horizontal = 0.0;
 
         if(altitude_base_is_set_)
         {
-            telemetry.altitude_relative.value = telemetry.altitude.value - altitude_base_;
+            telemetry.altitude_relative = telemetry.altitude - altitude_base_;
         }
         else
         {
-            telemetry.altitude_relative.value = 0.0;
+            telemetry.altitude_relative = 0.0;
         }
     }
     else
     {
-        telemetry.latitude.value = 0.0;
-        telemetry.longitude.value = 0.0;
-        telemetry.altitude.value = 0.0;
-        telemetry.course.value = 0.0;
-        telemetry.velocity_vertical.value = 0.0;
-        telemetry.velocity_horizontal.value = 0.0;
+        telemetry.latitude = 0.0;
+        telemetry.longitude = 0.0;
+        telemetry.altitude = 0.0;
+        telemetry.course = 0.0;
+        telemetry.velocity_vertical = 0.0;
+        telemetry.velocity_horizontal = 0.0;
 
         if(altitude_base_is_set_)
         {
-            telemetry.altitude_relative.value = telemetry.altitude_barometric.value - altitude_base_;
+            telemetry.altitude_relative = telemetry.altitude_barometric - altitude_base_;
         }
         else
         {
-            telemetry.altitude_relative.value = 0;
+            telemetry.altitude_relative = 0;
         }
     }
 

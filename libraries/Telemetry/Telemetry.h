@@ -22,32 +22,23 @@ typedef struct AxisData
 } AxisData;
 
 /**
- * @brief Union for float data in telemetry
- */
-typedef union
-{
-    float value;
-    uint8_t bytes[4];
-} FloatUnion_t;
-
-/**
  * @brief Structure for complete telemetry output.
  */
 typedef struct TelemetryStruct
 {
-    FloatUnion_t latitude;             /**< Latitude in decimal degrees */
-    FloatUnion_t longitude;            /**< Longitude in decimal degrees */
-    FloatUnion_t altitude;             /**< Altitude in meters from GPS */
-    FloatUnion_t altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS altitude */
-    FloatUnion_t altitude_barometric;  /**< Altitude in meters from barometer */
-    FloatUnion_t velocity_horizontal;  /**< Velocity horizontally along course vector */
-    FloatUnion_t velocity_vertical;    /**< Velocity vertically */
-    FloatUnion_t roll;                 /**< Roll in radians */
-    FloatUnion_t pitch;                /**< Pitch in radians */
-    FloatUnion_t heading;              /**< Magnetic heading in degrees */
-    FloatUnion_t course;               /**< Direction of travel in degrees */
-    FloatUnion_t temperature;          /**< Temperature in degrees C */
-    FloatUnion_t pressure;             /**< Pressure in pascals */
+    float latitude;             /**< Latitude in decimal degrees */
+    float longitude;            /**< Longitude in decimal degrees */
+    float altitude;             /**< Altitude in meters from GPS */
+    float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS altitude */
+    float altitude_barometric;  /**< Altitude in meters from barometer */
+    float velocity_horizontal;  /**< Velocity horizontally along course vector */
+    float velocity_vertical;    /**< Velocity vertically */
+    float roll;                 /**< Roll in radians */
+    float pitch;                /**< Pitch in radians */
+    float heading;              /**< Magnetic heading in degrees */
+    float course;               /**< Direction of travel in degrees */
+    float temperature;          /**< Temperature in degrees C */
+    float pressure;             /**< Pressure in pascals */
 } TelemetryStruct;
 
 /**
