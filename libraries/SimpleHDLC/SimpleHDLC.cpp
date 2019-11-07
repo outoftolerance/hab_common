@@ -31,7 +31,7 @@ void SimpleHDLC::sendByte_(const uint8_t data, bool special)
 
 void SimpleHDLC::serializeMessage_(const hdlcMessage& message, uint8_t buffer[], uint8_t buffer_length)
 {
-	for(int i = 0; i < message.length; i++)
+	for(int i = 0; i < buffer_length; i++)
 	{
 		if(i == 0)
 		{
