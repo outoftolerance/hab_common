@@ -1,4 +1,4 @@
-#define MESSAGE_REPORT_POSITION_PAYLOAD_LENGTH 6
+#define MESSAGE_REPORT_POSITION_PAYLOAD_LENGTH 8
 #define MESSAGE_REPORT_POSITION_PAYLOAD_BYTE_LENGTH 32
 
 typedef struct smpMessageReportPosition
@@ -9,6 +9,8 @@ typedef struct smpMessageReportPosition
     FloatUnion_t altitude_relative;
     FloatUnion_t altitude_barometric;
     FloatUnion_t course;
+    FloatUnion_t velocity_horizontal;
+    FloatUnion_t velocity_vertical;
 };
 
 static inline void smpMessageReportPositionEncode(uint8_t node_id, uint8_t node_type, smpMessageReportPosition& position, hdlcMessage& message)
@@ -59,5 +61,19 @@ static inline void smpMessageReportPositionEncode(uint8_t node_id, uint8_t node_
     for (bytes = 0; bytes < sizeof(float); bytes++)
     {
         message.payload[data_position + bytes] = position.course.bytes[bytes];
+    }
+
+    data_position += sizeof(float);
+
+    for (bytes = 0; bytes < sizeof(float); bytes++)
+    {
+        message.payload[data_position + bytes] = position.velocity_horizontal.bytes[bytes];
+    }
+
+    data_position += sizeof(float);
+
+    for (bytes = 0; bytes < sizeof(float); bytes++)
+    {
+        message.payload[data_position + bytes] = position.velocity_vertical.bytes[bytes];
     }
 }
