@@ -15,6 +15,7 @@ public:
 private:
   Adafruit_Sensor* _accel;
   Adafruit_Sensor* _mag;
+  Adafruit_Sensor* _accel_mag;
 
 };
 
