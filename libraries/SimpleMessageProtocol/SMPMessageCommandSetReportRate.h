@@ -17,14 +17,14 @@ static inline void smpMessageCommandSetReportRateEncode(uint8_t node_id, uint8_t
     int data_position = 0;
     int bytes = 0;
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(command.message.value); bytes++)
     {
         message.payload[data_position + bytes] = command.message.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(command.message.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(command.rate.value); bytes++)
     {
         message.payload[data_position + bytes] = command.rate.bytes[bytes];
     }
