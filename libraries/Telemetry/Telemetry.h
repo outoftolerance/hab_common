@@ -12,41 +12,41 @@
 #define GPS_SERIAL_BUFFER_SIZE 64
 
 /**
- * @brief Structure for axis related data (e.g. acceleration, velocity, gyro, mag, etc...)
- */
-typedef struct AxisData
-{
-    float x;
-    float y;
-    float z;
-} AxisData;
-
-/**
- * @brief Structure for complete telemetry output.
- */
-typedef struct TelemetryStruct
-{
-    float latitude;             /**< Latitude in decimal degrees */
-    float longitude;            /**< Longitude in decimal degrees */
-    float altitude;             /**< Altitude in meters from GPS */
-    float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS altitude */
-    float altitude_barometric;  /**< Altitude in meters from barometer */
-    float velocity_horizontal;  /**< Velocity horizontally along course vector */
-    float velocity_vertical;    /**< Velocity vertically */
-    float roll;                 /**< Roll in radians */
-    float pitch;                /**< Pitch in radians */
-    float heading;              /**< Magnetic heading in degrees */
-    float course;               /**< Direction of travel in degrees */
-    float temperature;          /**< Temperature in degrees C */
-    float pressure;             /**< Pressure in pascals */
-} TelemetryStruct;
-
-/**
  * @brief      Telemetry class definition. Class interacts with all sensors and gives access to sensor data in a useful way
  */
 class Telemetry
 {
     public:
+        /**
+         * @brief Structure for complete telemetry output.
+         */
+        typedef struct TelemetryStruct
+        {
+            float latitude;             /**< Latitude in decimal degrees */
+            float longitude;            /**< Longitude in decimal degrees */
+            float altitude;             /**< Altitude in meters from GPS */
+            float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS altitude */
+            float altitude_barometric;  /**< Altitude in meters from barometer */
+            float velocity_horizontal;  /**< Velocity horizontally along course vector */
+            float velocity_vertical;    /**< Velocity vertically */
+            float roll;                 /**< Roll in radians */
+            float pitch;                /**< Pitch in radians */
+            float heading;              /**< Magnetic heading in degrees */
+            float course;               /**< Direction of travel in degrees */
+            float temperature;          /**< Temperature in degrees C */
+            float pressure;             /**< Pressure in pascals */
+        } TelemetryStruct;
+
+        /**
+         * @brief Structure for axis related data (e.g. acceleration, velocity, gyro, mag, etc...)
+         */
+        typedef struct AxisData
+        {
+            float x;
+            float y;
+            float z;
+        } AxisData;
+
         /*
          * @brief      Telemetry class constructor without GPS
          */

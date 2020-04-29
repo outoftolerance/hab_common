@@ -24,9 +24,8 @@ enum MISSION_STATES
 typedef struct
 {
     unsigned long telemetry_check_interval;
-    unsigned long attitude_report_interval;
     unsigned long telemetry_log_interval;
-    unsigned long position_report_interval;
+    unsigned long telemetry_report_interval;
     bool beeper_enabled;
     bool led_enabled;
 } MissionStateFunction;
@@ -36,50 +35,43 @@ typedef struct
  */
 #define STAGING_TELEMETRY_CHECK_INTERVAL 1000
 #define STAGING_TELEMETRY_LOG_INTERVAL 5000
-#define STAGING_ATTITUDE_REPORT_INTERVAL 5000
-#define STAGING_POSITION_REPORT_INTERVAL 5000
+#define STAGING_TELEMETRY_REPORT_INTERVAL 5000
 #define STAGING_BEEPER_ENABLED false
 #define STAGING_LED_ENABLED true
 
 #define TAKEOFF_TELEMETRY_CHECK_INTERVAL 1000
-#define TAKEOFF_ATTITUDE_REPORT_INTERVAL 15000
 #define TAKEOFF_TELEMETRY_LOG_INTERVAL 5000
-#define TAKEOFF_POSITION_REPORT_INTERVAL 15000
+#define TAKEOFF_TELEMETRY_REPORT_INTERVAL 15000
 #define TAKEOFF_BEEPER_ENABLED true
 #define TAKEOFF_LED_ENABLED true
 
 #define ASCENDING_TELEMETRY_CHECK_INTERVAL 1000
-#define ASCENDING_ATTITUDE_REPORT_INTERVAL 30000
 #define ASCENDING_TELEMETRY_LOG_INTERVAL 5000
-#define ASCENDING_POSITION_REPORT_INTERVAL 30000
+#define ASCENDING_TELEMETRY_REPORT_INTERVAL 30000
 #define ASCENDING_BEEPER_ENABLED false
 #define ASCENDING_LED_ENABLED false
 
 #define DESCENDING_TELEMETRY_CHECK_INTERVAL 1000
-#define DESCENDING_ATTITUDE_REPORT_INTERVAL 30000
 #define DESCENDING_TELEMETRY_LOG_INTERVAL 5000
-#define DESCENDING_POSITION_REPORT_INTERVAL 30000
+#define DESCENDING_TELEMETRY_REPORT_INTERVAL 30000
 #define DESCENDING_BEEPER_ENABLED false
 #define DESCENDING_LED_ENABLED false
 
 #define LANDING_TELEMETRY_CHECK_INTERVAL 1000
-#define LANDING_ATTITUDE_REPORT_INTERVAL 30000
 #define LANDING_TELEMETRY_LOG_INTERVAL 5000
-#define LANDING_POSITION_REPORT_INTERVAL 5000
+#define LANDING_TELEMETRY_REPORT_INTERVAL 5000
 #define LANDING_BEEPER_ENABLED true
 #define LANDING_LED_ENABLED true
 
 #define RECOVERY_TELEMETRY_CHECK_INTERVAL 1000
-#define RECOVERY_ATTITUDE_REPORT_INTERVAL 30000
 #define RECOVERY_TELEMETRY_LOG_INTERVAL 5000
-#define RECOVERY_POSITION_REPORT_INTERVAL 30000
+#define RECOVERY_TELEMETRY_REPORT_INTERVAL 30000
 #define RECOVERY_BEEPER_ENABLED true
 #define RECOVERY_LED_ENABLED true
 
 #define RECOVERED_TELEMETRY_CHECK_INTERVAL 1000
-#define RECOVERED_ATTITUDE_REPORT_INTERVAL 30000
 #define RECOVERED_TELEMETRY_LOG_INTERVAL 5000
-#define RECOVERED_POSITION_REPORT_INTERVAL 30000
+#define RECOVERED_TELEMETRY_REPORT_INTERVAL 30000
 #define RECOVERED_BEEPER_ENABLED false
 #define RECOVERED_LED_ENABLED false
 
@@ -104,7 +96,7 @@ class MissionState
          * @brief Update the mission state with latest information
          * @return bool True if successfully updated, false if error reported
          */
-        bool update(const TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch);
+        bool update(const Telemetry::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch);
 
         /**
          * @brief Allows setting of the mission state to a particular state

@@ -23,7 +23,7 @@ MissionState::~MissionState()
 	landing_timeout_.forceReset();
 }
 
-bool MissionState::update(const TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
+bool MissionState::update(const Telemetry::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
 {
 	switch(current_mission_state_)
 	{
@@ -169,57 +169,50 @@ void MissionState::getFunction(MissionStateFunction& function)
 	{
 		case MISSION_STATES::STAGING:
 			function.telemetry_check_interval = STAGING_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = STAGING_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = STAGING_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = STAGING_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = STAGING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = STAGING_BEEPER_ENABLED;
 			function.led_enabled = STAGING_LED_ENABLED;
 			break;
 		case MISSION_STATES::TAKEOFF:
 			function.telemetry_check_interval = TAKEOFF_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = TAKEOFF_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = TAKEOFF_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = TAKEOFF_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = TAKEOFF_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = TAKEOFF_BEEPER_ENABLED;
 			function.led_enabled = TAKEOFF_LED_ENABLED;
 			break;
 		case MISSION_STATES::ASCENDING:
 			function.telemetry_check_interval = ASCENDING_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = ASCENDING_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = ASCENDING_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = ASCENDING_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = ASCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = ASCENDING_BEEPER_ENABLED;
 			function.led_enabled = ASCENDING_LED_ENABLED;
 			break;
 		case MISSION_STATES::DESCENDING:
 			function.telemetry_check_interval = DESCENDING_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = DESCENDING_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = DESCENDING_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = DESCENDING_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = DESCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = DESCENDING_BEEPER_ENABLED;
 			function.led_enabled = DESCENDING_LED_ENABLED;
 			break;
 		case MISSION_STATES::LANDING:
 			function.telemetry_check_interval = LANDING_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = LANDING_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = LANDING_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = LANDING_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = LANDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = LANDING_BEEPER_ENABLED;
 			function.led_enabled = LANDING_LED_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERY:
 			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = RECOVERY_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = RECOVERY_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
 			function.led_enabled = RECOVERY_LED_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERED:
 			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
-			function.attitude_report_interval = RECOVERY_ATTITUDE_REPORT_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
-			function.position_report_interval = RECOVERY_POSITION_REPORT_INTERVAL;
+			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
 			function.led_enabled = RECOVERY_LED_ENABLED;
 			break;
