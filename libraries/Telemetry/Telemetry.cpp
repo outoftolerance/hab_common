@@ -110,8 +110,11 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.longitude = (float)gps_.location.lng();
         telemetry.altitude = (float)gps_.altitude.meters();
         telemetry.course = (float)gps_.course.deg();
-        telemetry.velocity_vertical = 0.0;
+        telemetry.velocity_vertical = ((float)gps_.altitude.meters() - altitude_gps_previous_) / (float)(millis() - millis_altitude_gps_previous_)/1000.0;
         telemetry.velocity_horizontal = (float)gps_.speed.mps();
+
+        altitude_gps_previous_ = telemetry.altitude;
+        millis_altitude_gps_previous_ = millis();
 
         if(altitude_base_is_set_)
         {

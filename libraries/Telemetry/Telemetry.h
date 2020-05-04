@@ -141,13 +141,15 @@ class Telemetry
          */
         void update_();
 
-        TinyGPSPlus gps_;                                   /**< Defines Tiny GPS object */
-        Stream* gps_serial_;                                /**< Defines Stream object for GPS device serial port */
-        Buffer* gps_serial_buffer_;                         /**< Buffer to store received GPS serial data in for sending out to other devices */
-        int gps_fix_pin_;                                   /**< Pin that senses GPS fix status */
-        bool gps_fix_status_;                               /**< Current fix status of the GPS unit */
+        TinyGPSPlus gps_;                               /**< Defines Tiny GPS object */
+        Stream* gps_serial_;                            /**< Defines Stream object for GPS device serial port */
+        Buffer* gps_serial_buffer_;                     /**< Buffer to store received GPS serial data in for sending out to other devices */
+        int gps_fix_pin_;                               /**< Pin that senses GPS fix status */
+        bool gps_fix_status_;                           /**< Current fix status of the GPS unit */
         bool altitude_base_is_set_;                     /**< Indicates if the base altitude is set or not yet */
         float altitude_base_;                           /**< Altitude the system was initialized at, used to calculate relative altitude */
+        float altitude_gps_previous_;                   /**< Previous GPS altitude, used for vertical velocity estimation */
+        long millis_altitude_gps_previous_;             /**< The timestamp of the previous GPS altitude reading */
         Imu* imu_;
 };
 
