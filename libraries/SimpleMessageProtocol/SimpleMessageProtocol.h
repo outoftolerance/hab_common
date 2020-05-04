@@ -5,5 +5,7 @@
 #include <SMPMessageHeartbeat.h>
 #include <SMPMessageReportTelemetry.h>
 
+#include <SMPMessageCommandSetReportRate.h>
+
 #include <SMPMessageProtoAck.h>
 #include <SMPMessageProtoNack.h>

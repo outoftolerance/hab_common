@@ -28,92 +28,204 @@ static inline void smpMessageReportTelemetryEncode(uint8_t node_id, uint8_t node
     int data_position = 0;
     int bytes = 0;
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.latitude.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.latitude.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.latitude.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.longitude.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.longitude.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.longitude.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.altitude.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.altitude.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.altitude.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_relative.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.altitude_relative.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.altitude_relative.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_barometric.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.altitude_barometric.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.altitude_barometric.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.velocity_horizontal.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.velocity_horizontal.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.velocity_horizontal.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.velocity_vertical.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.velocity_vertical.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.velocity_vertical.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.roll.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.roll.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.roll.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.pitch.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.pitch.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.pitch.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.heading.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.heading.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.heading.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.course.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.course.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.course.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.temperature.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.temperature.bytes[bytes];
     }
 
-    data_position += sizeof(float);
+    data_position += sizeof(telemetry.temperature.value);
 
-    for (bytes = 0; bytes < sizeof(float); bytes++)
+    for (bytes = 0; bytes < sizeof(telemetry.pressure.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.pressure.bytes[bytes];
+    }
+}
+
+static inline void smpMessageReportTelemetryDecode(hdlcMessage& message, smpMessageReportTelemetry& telemetry)
+{
+    int data_position = 0;
+    int bytes = 0;
+
+    //Lat
+    for (bytes = 0; bytes < sizeof(telemetry.latitude.value); bytes++)
+    {
+        telemetry.latitude.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Lon
+    data_position += sizeof(telemetry.latitude.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.longitude.value); bytes++)
+    {
+        telemetry.longitude.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Alt
+    data_position += sizeof(telemetry.longitude.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.altitude.value); bytes++)
+    {
+        telemetry.altitude.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Alt Rel
+    data_position += sizeof(telemetry.longitude.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_relative.value); bytes++)
+    {
+        telemetry.altitude_relative.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Alt Baro
+    data_position += sizeof(telemetry.altitude_relative.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_barometric.value); bytes++)
+    {
+        telemetry.altitude_barometric.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Vel Hor
+    data_position += sizeof(telemetry.altitude_barometric.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.velocity_horizontal.value); bytes++)
+    {
+        telemetry.velocity_horizontal.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Vel Vert
+    data_position += sizeof(telemetry.velocity_horizontal.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.velocity_vertical.value); bytes++)
+    {
+        telemetry.velocity_vertical.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+
+    //Roll
+    data_position += sizeof(telemetry.velocity_vertical.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.roll.value); bytes++)
+    {
+        telemetry.roll.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+
+    //Pitch
+    data_position += sizeof(telemetry.roll.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.pitch.value); bytes++)
+    {
+        telemetry.pitch.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+
+    //Heading
+    data_position += sizeof(telemetry.pitch.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.heading.value); bytes++)
+    {
+        telemetry.heading.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+
+    //Course
+    data_position += sizeof(telemetry.heading.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.course.value); bytes++)
+    {
+        telemetry.course.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Temp
+    data_position += sizeof(telemetry.course.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.temperature.value); bytes++)
+    {
+        telemetry.temperature.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Pres
+    data_position += sizeof(telemetry.temperature.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.pressure.value); bytes++)
+    {
+        telemetry.pressure.bytes[bytes] = message.payload[data_position + bytes];
     }
 }

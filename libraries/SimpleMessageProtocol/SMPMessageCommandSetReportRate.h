@@ -3,7 +3,7 @@
 
 typedef struct smpMessageCommandSetReportRate
 {
-    Int16Union_t message;   /*< MESSAGE_TYPE id rate being set */
+    Int16Union_t report;   /*< MESSAGE_TYPE id rate being set */
     FloatUnion_t rate;      /*< Desired message rate in Hz */
 };
 
@@ -17,15 +17,33 @@ static inline void smpMessageCommandSetReportRateEncode(uint8_t node_id, uint8_t
     int data_position = 0;
     int bytes = 0;
 
-    for (bytes = 0; bytes < sizeof(command.message.value); bytes++)
+    for (bytes = 0; bytes < sizeof(command.report.value); bytes++)
     {
-        message.payload[data_position + bytes] = command.message.bytes[bytes];
+        message.payload[data_position + bytes] = command.report.bytes[bytes];
     }
 
-    data_position += sizeof(command.message.value);
+    data_position += sizeof(command.report.value);
 
     for (bytes = 0; bytes < sizeof(command.rate.value); bytes++)
     {
         message.payload[data_position + bytes] = command.rate.bytes[bytes];
+    }
+}
+
+static inline void smpMessageCommandSetReportRateDecode(hdlcMessage& message, smpMessageCommandSetReportRate& command)
+{
+    int data_position = 0;
+    int bytes = 0;
+
+    for (bytes = 0; bytes < sizeof(command.report.value); bytes++)
+    {
+        command.report.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    data_position += sizeof(command.report.value);
+
+    for (bytes = 0; bytes < sizeof(command.rate.value); bytes++)
+    {
+        command.rate.bytes[bytes] = message.payload[data_position + bytes];
     }
 }
