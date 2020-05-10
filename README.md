@@ -46,3 +46,11 @@ The project also depends on a few externally developed libraries as listed here.
 **MSL Geoid** - A reference *geoid* model of the earth. This does **not** assume the earth is smooth, it is a used as a lookup table that attempts to account for weird shapes of the earth. The model is effectively created such that if the sea covered the earth, where would mean sea level be?
 
 **GPGGA** - This NMEA-0183 sentence reports an altitude value, this value is above the MSL Geoid, not the WGS84 Ellipsoid! It also reports an "undulation" or "geoidal separation" value, this is the difference at the current location between the ellipsoid (WGS84) and the geoid (MSL). Thereby you can convert the MSL geoid altitude, which is directly reported, into the WGS84 ellipsoid altitude.
+
+**Sources:**
+https://www.gpsinformation.org/dale/nmea.htm#GGA
+https://docs.novatel.com/OEM7/Content/Logs/GPGGA.htm
+https://en.wikipedia.org/wiki/Geoid
+https://www.esri.com/news/arcuser/0703/geoid1of3.html
+https://sciencing.com/difference-between-geoid-ellipsoid-8638149.html
+http://aprs.gids.nl/nmea/#gga
