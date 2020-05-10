@@ -73,6 +73,14 @@ int SimpleServo::calculateMovement_()
     {
     	return min_pwm_;
     }
+    else if(max_pwm_ < min_pwm_ && output < max_pwm_)
+    {
+    	return max_pwm_;
+    }
+    else if(max_pwm_ > min_pwm_ && output > max_pwm_)
+    {
+    	return max_pwm_;
+    }
     else
     {
     	return output;
