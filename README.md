@@ -36,3 +36,13 @@ The project also depends on a few externally developed libraries as listed here.
 - Adafruit LSM303DLHC
 - Adafruit FXOS8700
 - Adafruit FXAS21002C
+
+# Usefull Notes
+
+## GPS Altitude References
+
+**WGS84 Ellipsoid** - A reference *ellipsoid* model of the earth. The ellipsoid assumes that the eart is smooth, this is litterally a squashed sphere, it doesn't take into account anything to do with the real world's oddities and indonsistencies (e.g. gravity is different in some places).
+
+**MSL Geoid** - A reference *geoid* model of the earth. This does **not** assume the earth is smooth, it is a used as a lookup table that attempts to account for weird shapes of the earth. The model is effectively created such that if the sea covered the earth, where would mean sea level be?
+
+**GPGGA** - This NMEA-0183 sentence reports an altitude value, this value is above the MSL Geoid, not the WGS84 Ellipsoid! It also reports an "undulation" or "geoidal separation" value, this is the difference at the current location between the ellipsoid (WGS84) and the geoid (MSL). Thereby you can convert the MSL geoid altitude, which is directly reported, into the WGS84 ellipsoid altitude.
