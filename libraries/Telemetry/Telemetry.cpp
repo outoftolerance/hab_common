@@ -109,6 +109,10 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.latitude = (float)gps_.location.lat();
         telemetry.longitude = (float)gps_.location.lng();
         telemetry.altitude = (float)gps_.altitude.meters();
+        telemetry.altitude_ellipsoid = (float)gps_.altitude_ellipsoid.meters();
+        telemetry.elevation = (float)gps_.elevation.value();
+        telemetry.azimuth = (float)gps_.azimuth.value();
+        telemetry.gps_snr = (float)gps_.snr.value();
         telemetry.course = (float)gps_.course.deg();
         telemetry.velocity_vertical = ((float)gps_.altitude.meters() - altitude_gps_previous_) / (float)(millis() - millis_altitude_gps_previous_)/1000.0;
         telemetry.velocity_horizontal = (float)gps_.speed.mps();
@@ -130,6 +134,7 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.latitude = 0.0;
         telemetry.longitude = 0.0;
         telemetry.altitude = 0.0;
+        telemetry.altitude_ellipsoid = 0.0;
         telemetry.course = 0.0;
         telemetry.velocity_vertical = 0.0;
         telemetry.velocity_horizontal = 0.0;

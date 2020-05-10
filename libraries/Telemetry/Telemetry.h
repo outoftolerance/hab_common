@@ -24,9 +24,13 @@ class Telemetry
         {
             float latitude;             /**< Latitude in decimal degrees */
             float longitude;            /**< Longitude in decimal degrees */
-            float altitude;             /**< Altitude in meters from GPS */
-            float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS altitude */
+            float altitude;             /**< Altitude in meters from GPS MSL Geoid */
+            float altitude_ellipsoid;   /**< Altitude in meters from GPS WGS84 Ellipsoid */
+            float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS MSL geoid altitude */
             float altitude_barometric;  /**< Altitude in meters from barometer */
+            float elevation;            /**< Elevation from GPS receiver (NOT THE SAME AS ALTITUDE) */
+            float azimuth;              /**< Azimuth of GPS receiver */
+            float gps_snr;              /**< Signal to noise ratio of GPS receiver */
             float velocity_horizontal;  /**< Velocity horizontally along course vector */
             float velocity_vertical;    /**< Velocity vertically */
             float roll;                 /**< Roll in radians */

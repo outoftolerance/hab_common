@@ -229,7 +229,12 @@ public:
   TinyGPSSpeed speed;
   TinyGPSCourse course;
   TinyGPSAltitude altitude;
+  TinyGPSAltitude altitude_ellipsoid;
+  TinyGPSAltitude geoidal_separation;
   TinyGPSInteger satellites;
+  TinyGPSInteger elevation;
+  TinyGPSInteger azimuth;
+  TinyGPSInteger snr;
   TinyGPSHDOP hdop;
 
   static const char *libraryVersion() { return _GPS_VERSION; }
@@ -247,7 +252,7 @@ public:
   uint32_t passedChecksum()   const { return passedChecksumCount; }
 
 private:
-  enum {GPS_SENTENCE_GPGGA, GPS_SENTENCE_GPRMC, GPS_SENTENCE_OTHER};
+  enum {GPS_SENTENCE_GPGGA, GPS_SENTENCE_GPRMC, GPS_SENTENCE_GPGSV, GPS_SENTENCE_OTHER};
 
   // parsing state variables
   uint8_t parity;
