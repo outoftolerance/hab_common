@@ -289,7 +289,7 @@ bool TinyGPSPlus::endOfTermHandler()
 
       if(altitude.isValid()) //If we have a valid altitude, set the geoidal altitude as well
       {
-        altitude_ellipsoid.set(altitude + term);
+        altitude_ellipsoid.set(altitude.value() + geoidal_separation.value());
       }
       break;
     case COMBINE(GPS_SENTENCE_GPGSV, 5): // Elevation
@@ -473,6 +473,11 @@ void TinyGPSDecimal::commit()
 void TinyGPSDecimal::set(const char *term)
 {
    newval = TinyGPSPlus::parseDecimal(term);
+}
+
+void TinyGPSDecimal::set(const int32_t set_val)
+{
+   newval = set_val;
 }
 
 void TinyGPSInteger::commit()

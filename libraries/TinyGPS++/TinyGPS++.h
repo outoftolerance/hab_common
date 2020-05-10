@@ -141,6 +141,7 @@ private:
    int32_t val, newval;
    void commit();
    void set(const char *term);
+   void set(int32_t set_val);
 };
 
 struct TinyGPSInteger
@@ -232,9 +233,9 @@ public:
   TinyGPSAltitude altitude_ellipsoid;
   TinyGPSAltitude geoidal_separation;
   TinyGPSInteger satellites;
-  TinyGPSInteger elevation;
-  TinyGPSInteger azimuth;
-  TinyGPSInteger snr;
+  TinyGPSDecimal elevation;
+  TinyGPSDecimal azimuth;
+  TinyGPSDecimal snr;
   TinyGPSHDOP hdop;
 
   static const char *libraryVersion() { return _GPS_VERSION; }

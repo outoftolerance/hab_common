@@ -1,7 +1,7 @@
 /**
  * @brief      Defines different message types that can be sent
  */
-enum MESSAGE_TYPES {
+enum MESSAGE_TYPES : uint8_t {
 	/**
 	 * Report Messages
 	 */
@@ -27,7 +27,7 @@ enum MESSAGE_TYPES {
     MESSAGE_TYPE_PROTO_NACK
 };
 
-enum NODE_TYPES {
+enum NODE_TYPES : uint8_t {
     NODE_TYPE_GROUNDSTATION = 0,
     NODE_TYPE_BALLOON,
     NODE_TYPE_TRACKER
@@ -43,10 +43,19 @@ typedef union
 } FloatUnion_t;
 
 /**
- * @brief Union for float data
+ * @brief Union for uint16 data
  */
 typedef union
 {
     uint16_t value;
     uint8_t bytes[2];
-} Int16Union_t;
+} UInt16Union_t;
+
+/**
+ * @brief Union for uint8 data
+ */
+typedef union
+{
+    uint8_t value;
+    uint8_t bytes[1];
+} UInt8Union_t;

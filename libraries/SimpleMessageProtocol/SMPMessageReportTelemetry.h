@@ -1,13 +1,17 @@
-#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_LENGTH 13
-#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_BYTE_LENGTH 52
+#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_LENGTH 17
+#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_BYTE_LENGTH 68
 
 typedef struct smpMessageReportTelemetry
 {
     FloatUnion_t latitude;
     FloatUnion_t longitude;
     FloatUnion_t altitude;
+    FloatUnion_t altitude_ellipsoid;
     FloatUnion_t altitude_relative;
     FloatUnion_t altitude_barometric;
+    FloatUnion_t elevation;
+    FloatUnion_t azimuth;
+    FloatUnion_t gps_snr;
     FloatUnion_t velocity_horizontal;
     FloatUnion_t velocity_vertical;
     FloatUnion_t roll;
@@ -49,6 +53,13 @@ static inline void smpMessageReportTelemetryEncode(uint8_t node_id, uint8_t node
 
     data_position += sizeof(telemetry.altitude.value);
 
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_ellipsoid.value); bytes++)
+    {
+        message.payload[data_position + bytes] = telemetry.altitude_ellipsoid.bytes[bytes];
+    }
+
+    data_position += sizeof(telemetry.altitude_ellipsoid.value);
+
     for (bytes = 0; bytes < sizeof(telemetry.altitude_relative.value); bytes++)
     {
         message.payload[data_position + bytes] = telemetry.altitude_relative.bytes[bytes];
@@ -62,6 +73,27 @@ static inline void smpMessageReportTelemetryEncode(uint8_t node_id, uint8_t node
     }
 
     data_position += sizeof(telemetry.altitude_barometric.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.elevation.value); bytes++)
+    {
+        message.payload[data_position + bytes] = telemetry.elevation.bytes[bytes];
+    }
+
+    data_position += sizeof(telemetry.elevation.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.azimuth.value); bytes++)
+    {
+        message.payload[data_position + bytes] = telemetry.azimuth.bytes[bytes];
+    }
+
+    data_position += sizeof(telemetry.azimuth.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.gps_snr.value); bytes++)
+    {
+        message.payload[data_position + bytes] = telemetry.gps_snr.bytes[bytes];
+    }
+
+    data_position += sizeof(telemetry.gps_snr.value);
 
     for (bytes = 0; bytes < sizeof(telemetry.velocity_horizontal.value); bytes++)
     {
@@ -145,8 +177,16 @@ static inline void smpMessageReportTelemetryDecode(hdlcMessage& message, smpMess
         telemetry.altitude.bytes[bytes] = message.payload[data_position + bytes];
     }
 
+    //Alt Ellipsoid
+    data_position += sizeof(telemetry.altitude.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.altitude_ellipsoid.value); bytes++)
+    {
+        telemetry.altitude_ellipsoid.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
     //Alt Rel
-    data_position += sizeof(telemetry.longitude.value);
+    data_position += sizeof(telemetry.altitude_ellipsoid.value);
 
     for (bytes = 0; bytes < sizeof(telemetry.altitude_relative.value); bytes++)
     {
@@ -161,8 +201,32 @@ static inline void smpMessageReportTelemetryDecode(hdlcMessage& message, smpMess
         telemetry.altitude_barometric.bytes[bytes] = message.payload[data_position + bytes];
     }
 
-    //Vel Hor
+    //Elevation
     data_position += sizeof(telemetry.altitude_barometric.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.elevation.value); bytes++)
+    {
+        telemetry.elevation.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Azimuth
+    data_position += sizeof(telemetry.elevation.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.azimuth.value); bytes++)
+    {
+        telemetry.azimuth.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //GPS SNR
+    data_position += sizeof(telemetry.azimuth.value);
+
+    for (bytes = 0; bytes < sizeof(telemetry.gps_snr.value); bytes++)
+    {
+        telemetry.gps_snr.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    //Vel Hor
+    data_position += sizeof(telemetry.gps_snr.value);
 
     for (bytes = 0; bytes < sizeof(telemetry.velocity_horizontal.value); bytes++)
     {

@@ -3,7 +3,7 @@
 
 typedef struct smpMessageProtoNack
 {
-    uint8_t type;
+    UInt8Union_t command;
 };
 
 static inline void smpMessageProtoNackEncode(uint8_t node_id, uint8_t node_type, smpMessageProtoNack& nack, hdlcMessage& message)
@@ -16,8 +16,19 @@ static inline void smpMessageProtoNackEncode(uint8_t node_id, uint8_t node_type,
     int data_position = 0;
     int bytes = 0;
 
-    for (bytes = 0; bytes < sizeof(uint8_t); bytes++)
+    for (bytes = 0; bytes < sizeof(nack.command); bytes++)
     {
-        message.payload[data_position + bytes] = nack.type;
+        message.payload[data_position + bytes] = nack.command.bytes[bytes];
+    }
+}
+
+static inline void smpMessageProtoNackDecode(hdlcMessage& message, smpMessageProtoNack& nack)
+{
+    int data_position = 0;
+    int bytes = 0;
+
+    for (bytes = 0; bytes < sizeof(nack.command); bytes++)
+    {
+        nack.command.bytes[bytes] = message.payload[data_position + bytes];
     }
 }

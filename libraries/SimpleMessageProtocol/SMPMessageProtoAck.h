@@ -3,7 +3,7 @@
 
 typedef struct smpMessageProtoAck
 {
-	Int16Union_t command;
+	UInt8Union_t command;
 };
 
 static inline void smpMessageProtoAckEncode(uint8_t node_id, uint8_t node_type, smpMessageProtoAck& ack, hdlcMessage& message)
@@ -18,7 +18,7 @@ static inline void smpMessageProtoAckEncode(uint8_t node_id, uint8_t node_type, 
 
     for (bytes = 0; bytes < sizeof(ack.command); bytes++)
     {
-        message.payload[data_position + bytes] = ack.command;
+        message.payload[data_position + bytes] = ack.command.bytes[bytes];
     }
 }
 
@@ -29,6 +29,6 @@ static inline void smpMessageProtoAckDecode(hdlcMessage& message, smpMessageProt
 
     for (bytes = 0; bytes < sizeof(ack.command); bytes++)
     {
-        ack.command = message.payload[data_position + bytes];
+        ack.command.bytes[bytes] = message.payload[data_position + bytes];
     }
 }

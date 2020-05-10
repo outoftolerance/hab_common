@@ -1,9 +1,9 @@
-#define MESSAGE_COMMAND_SET_REPORT_RATE_PAYLOAD_LENGTH 13
-#define MESSAGE_COMMAND_SET_REPORT_RATE_PAYLOAD_BYTE_LENGTH 52
+#define MESSAGE_COMMAND_SET_REPORT_RATE_PAYLOAD_LENGTH 2
+#define MESSAGE_COMMAND_SET_REPORT_RATE_PAYLOAD_BYTE_LENGTH 5
 
 typedef struct smpMessageCommandSetReportRate
 {
-    Int16Union_t report;   /*< MESSAGE_TYPE id rate being set */
+    UInt8Union_t report;   /*< MESSAGE_TYPE id rate being set */
     FloatUnion_t rate;      /*< Desired message rate in Hz */
 };
 
