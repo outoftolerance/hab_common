@@ -136,6 +136,9 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.altitude = 0.0;
         telemetry.altitude_ellipsoid = 0.0;
         telemetry.course = 0.0;
+        telemetry.elevation = 0.0;
+        telemetry.azimuth = 0.0;
+        telemetry.gps_snr = 0.0;
         telemetry.velocity_vertical = 0.0;
         telemetry.velocity_horizontal = 0.0;
 

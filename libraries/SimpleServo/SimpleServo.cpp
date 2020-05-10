@@ -1,16 +1,18 @@
 #include "SimpleServo.h"
 
-SimpleServo::SimpleServo(int min_pwm, int max_pwm, int servo_channel, Adafruit_PWMServoDriver* servo_driver)
+SimpleServo::SimpleServo(int min_pwm, int max_pwm, int servo_channel, Adafruit_PWMServoDriver* driver)
 {
 	min_pwm_ = min_pwm;
 	max_pwm_ = max_pwm;
 	servo_channel_ = servo_channel;
+	driver_ = driver;
 
-	driver_ = servo_driver;
+	current_pwm_ = min_pwm;
 
-	target_angle_ = 0;
 	step_size_ = DEFAULT_STEP_SIZE;
 	update_delay_ = DEFAULT_UPDATE_DELAY;
+
+	update_timer_.setInterval(update_delay_);
 }
 
 float SimpleServo::getCurrentAngle()
@@ -45,7 +47,7 @@ bool SimpleServo::setUpdateRate(int delay)
 
 int SimpleServo::calculateMovement_()
 {
-    int output;
+    int output = current_pwm_;
 
     if(target_pwm_ != current_pwm_)
     {
@@ -63,25 +65,43 @@ int SimpleServo::calculateMovement_()
         }
     }
 
-    if(output > min_pwm_ && output < max_pwm_)
+    if(min_pwm_ < max_pwm_ && output < min_pwm_)
     {
-    	return output;
+    	return min_pwm_;
+    }
+    else if(min_pwm_ > max_pwm_ && output > min_pwm_)
+    {
+    	return min_pwm_;
     }
     else
     {
-    	return current_pwm_;
+    	return output;
     }
 }
 
-bool SimpleServo::update()
+bool SimpleServo::start()
+{
+	bool result = update_timer_.start();
+	return result;
+}
+
+bool SimpleServo::stop()
+{
+	bool result = update_timer_.stop();
+	return result;
+}
+
+bool SimpleServo::move()
 {
 	if(update_timer_.check())
 	{
 	    current_pwm_ = calculateMovement_();
 	    current_angle_ = map(current_pwm_, min_pwm_, max_pwm_, 0, 90);
-	    
+
 	    driver_->setPWM(servo_channel_, 0, current_pwm_);
 
 	    update_timer_.reset();
 	}
+
+	return true;
 }

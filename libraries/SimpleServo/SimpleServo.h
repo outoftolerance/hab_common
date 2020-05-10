@@ -11,8 +11,11 @@
 
 class SimpleServo {
 	public:
-		SimpleServo(int min_pwm, int max_pwm, int servo_channel_, Adafruit_PWMServoDriver* servo_driver);
-		bool update();
+		SimpleServo(int min_pwm, int max_pwm, int servo_channel_, Adafruit_PWMServoDriver* driver);
+		void init();
+		bool start();
+		bool stop();
+		bool move();
 		float getCurrentAngle();
 		float getTargetAngle();
 		bool setTargetAngle(float angle);
