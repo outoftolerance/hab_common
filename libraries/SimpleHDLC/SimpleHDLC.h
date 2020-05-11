@@ -10,7 +10,7 @@
 #define CONTROL_ESCAPE_BYTE 0x7D    /**< A "control escape octet", has the bit sequence '01111101', (7D hexadecimal) */
 #define INVERT_BYTE 0x20            /**<  */
 #define CRC16_CCITT_INIT_VAL 0xFFFF /**< Initial value for CRC checksum */
-#define MAX_FRAME_LENGTH 64         /**< Maximum length of a frame including start and end flags */
+#define MAX_FRAME_LENGTH 64        /**< Maximum length of a frame including start and end flags */
 #define FRAME_HEADER_LENGTH 4       /**< Length of header (node id, node type, command, payload length)
 
 /**

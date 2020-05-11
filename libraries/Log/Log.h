@@ -67,6 +67,13 @@ class Log {
         * @param      message  The message to be logged
         * @param      data  A number to be logged with the string
         */
+        void event(LOG_LEVELS level, const char message[], double data);
+
+        /**
+        * @brief      Infomation log level
+        * @param      message  The message to be logged
+        * @param      data  A number to be logged with the string
+        */
         void event(LOG_LEVELS level, const char message[], int data);
 
     private:

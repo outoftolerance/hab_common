@@ -61,6 +61,8 @@ void Telemetry::update_()
         {
             altitude_base_ = (float)gps_.altitude.meters();
             altitude_base_is_set_ = true;
+
+            gps_fix_status_ = true;
         }
     }
     else if(!altitude_base_is_set_)
@@ -74,6 +76,9 @@ void Telemetry::update_()
 
 bool Telemetry::init()
 {
+    //Set pinmodes
+    pinMode(gps_fix_status_, INPUT);
+    
     //Initialise the GPS
     if(gps_serial_ != NULL)
     {

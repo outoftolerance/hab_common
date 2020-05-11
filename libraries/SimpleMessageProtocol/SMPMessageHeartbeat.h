@@ -3,7 +3,7 @@
 
 typedef struct smpMessageHeartbeat
 {
-	uint8_t mission_state;
+	UInt8Union_t state;
 };
 
 static inline void smpMessageHeartbeatEncode(uint8_t node_id, uint8_t node_type, smpMessageHeartbeat& heartbeat, hdlcMessage& message)
@@ -16,8 +16,19 @@ static inline void smpMessageHeartbeatEncode(uint8_t node_id, uint8_t node_type,
     int data_position = 0;
     int bytes = 0;
 
-    for (bytes = 0; bytes < sizeof(uint8_t); bytes++)
+    for (bytes = 0; bytes < sizeof(heartbeat.state.value); bytes++)
     {
-        message.payload[data_position + bytes] = heartbeat.mission_state;
+        message.payload[data_position + bytes] = heartbeat.state.bytes[bytes];
+    }
+}
+
+static inline void smpMessageHeartbeatDecode(hdlcMessage& message, smpMessageHeartbeat& heartbeat)
+{
+    int data_position = 0;
+    int bytes = 0;
+
+    for (bytes = 0; bytes < sizeof(heartbeat.state.value); bytes++)
+    {
+        heartbeat.state.bytes[bytes] = message.payload[data_position + bytes];
     }
 }

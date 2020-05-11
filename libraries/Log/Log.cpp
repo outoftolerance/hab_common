@@ -49,6 +49,20 @@ void Log::event(LOG_LEVELS level, const char message[], const float data)
     }
 }
 
+void Log::event(LOG_LEVELS level, const char message[], const double data)
+{
+    if(level >= log_level_)
+    {
+        String preamble;
+        getPreamble_(level, preamble);
+
+        output_.print(preamble);
+        output_.print(message);
+        output_.print(": ");
+        output_.println(data, 6);   //set level of float precision to 6 decimals
+    }
+}
+
 void Log::event(LOG_LEVELS level, const char message[], const int data)
 {
     if(level >= log_level_)

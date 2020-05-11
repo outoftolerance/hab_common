@@ -136,7 +136,7 @@ void SimpleHDLC::receive()
 			frame_crc16 = fast_crc16_.kermit(frame_receive_buffer_, frame_position_ - 2);
 
 			//Check if a valid frame is found
-			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 2] << 8 ) | (frame_receive_buffer_[frame_position_ - 1] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
+			if( (frame_position_ >= 2) && ( frame_crc16 == (uint16_t)((frame_receive_buffer_[frame_position_ - 1] << 8 ) | (frame_receive_buffer_[frame_position_ - 2] & 0xff)) ) )  // (msb << 8 ) | (lsb & 0xff)
 			{
 				//Decode new frame into message
 				hdlcMessage new_message;
