@@ -2,7 +2,6 @@
 #define HardwareConfiguration_h
 
 #define SD_CHIP_SELECT 6
-#define GPS_FIX_STATUS 9
 #define ARM_SWITCH 12
 #define SILENCE_SWITCH 12
 #define LED_EXTERNAL 12

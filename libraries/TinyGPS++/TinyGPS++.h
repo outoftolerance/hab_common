@@ -233,10 +233,8 @@ public:
   TinyGPSAltitude altitude_ellipsoid;
   TinyGPSAltitude geoidal_separation;
   TinyGPSInteger satellites;
-  TinyGPSDecimal elevation;
-  TinyGPSDecimal azimuth;
-  TinyGPSDecimal snr;
   TinyGPSHDOP hdop;
+  TinyGPSInteger fix;
 
   static const char *libraryVersion() { return _GPS_VERSION; }
 

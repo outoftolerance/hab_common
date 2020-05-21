@@ -28,9 +28,6 @@ class Telemetry
             float altitude_ellipsoid;   /**< Altitude in meters from GPS WGS84 Ellipsoid */
             float altitude_relative;    /**< Altitude in meters from GPS relative to boot GPS MSL geoid altitude */
             float altitude_barometric;  /**< Altitude in meters from barometer */
-            float elevation;            /**< Elevation from GPS receiver (NOT THE SAME AS ALTITUDE) */
-            float azimuth;              /**< Azimuth of GPS receiver */
-            float gps_snr;              /**< Signal to noise ratio of GPS receiver */
             float velocity_horizontal;  /**< Velocity horizontally along course vector */
             float velocity_vertical;    /**< Velocity vertically */
             float roll;                 /**< Roll in radians */
@@ -39,6 +36,8 @@ class Telemetry
             float course;               /**< Direction of travel in degrees */
             float temperature;          /**< Temperature in degrees C */
             float pressure;             /**< Pressure in pascals */
+            float hdop;                 /**< GPS HDOP */
+            float fix;                  /**< GPS fix status */
         } TelemetryStruct;
 
         /**
@@ -62,7 +61,7 @@ class Telemetry
          * @param      gps_stream  Pointer to the Stream object for the GPS serial port
          * @param      gps_fix_pin Pin number for the GPS fix status indicator
          */
-        Telemetry(IMU_TYPES imu_type, Stream* gps_stream, int gps_fix_pin);
+        Telemetry(IMU_TYPES imu_type, Stream* gps_stream);
 
         /**
          * @brief      Initialises all variables and objects to their default value/state

@@ -19,9 +19,8 @@ Telemetry::Telemetry(IMU_TYPES imu_type)
     }
 }
 
-Telemetry::Telemetry(IMU_TYPES imu_type, Stream* gps_serial, int gps_fix_pin) :
-    gps_serial_(gps_serial),
-    gps_fix_pin_(gps_fix_pin)
+Telemetry::Telemetry(IMU_TYPES imu_type, Stream* gps_serial) :
+    gps_serial_(gps_serial)
 {
     switch(imu_type)
     {
@@ -57,7 +56,7 @@ void Telemetry::update_()
         }
 
         //Detect for first transition of GPS fix
-        if(!gps_fix_status_ && digitalRead(gps_fix_pin_) && !altitude_base_is_set_)
+        if(!gps_fix_status_ && gps_.fix.value() > 0 && !altitude_base_is_set_)
         {
             altitude_base_ = (float)gps_.altitude.meters();
             altitude_base_is_set_ = true;
@@ -76,9 +75,6 @@ void Telemetry::update_()
 
 bool Telemetry::init()
 {
-    //Set pinmodes
-    pinMode(gps_fix_status_, INPUT);
-    
     //Initialise the GPS
     if(gps_serial_ != NULL)
     {
@@ -115,12 +111,11 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.longitude = (float)gps_.location.lng();
         telemetry.altitude = (float)gps_.altitude.meters();
         telemetry.altitude_ellipsoid = (float)gps_.altitude_ellipsoid.meters();
-        telemetry.elevation = (float)gps_.elevation.value();
-        telemetry.azimuth = (float)gps_.azimuth.value();
-        telemetry.gps_snr = (float)gps_.snr.value();
         telemetry.course = (float)gps_.course.deg();
         telemetry.velocity_vertical = ((float)gps_.altitude.meters() - altitude_gps_previous_) / (float)(millis() - millis_altitude_gps_previous_)/1000.0;
         telemetry.velocity_horizontal = (float)gps_.speed.mps();
+        telemetry.hdop = (float)gps_.hdop.hdop();
+        telemetry.fix = (float)gps_.fix.value();
 
         altitude_gps_previous_ = telemetry.altitude;
         millis_altitude_gps_previous_ = millis();
@@ -141,11 +136,10 @@ bool Telemetry::get(TelemetryStruct& telemetry)
         telemetry.altitude = 0.0;
         telemetry.altitude_ellipsoid = 0.0;
         telemetry.course = 0.0;
-        telemetry.elevation = 0.0;
-        telemetry.azimuth = 0.0;
-        telemetry.gps_snr = 0.0;
         telemetry.velocity_vertical = 0.0;
         telemetry.velocity_horizontal = 0.0;
+        telemetry.hdop = 0.0;
+        telemetry.fix = 0.0;
 
         if(altitude_base_is_set_)
         {

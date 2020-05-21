@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define _GPRMCterm   "GPRMC"
 #define _GPGGAterm   "GPGGA"
-#define _GPGSVterm   "GPGSV"
 #define _GNRMCterm   "GNRMC"
 #define _GNGGAterm   "GNGGA"
 
@@ -192,14 +191,7 @@ bool TinyGPSPlus::endOfTermHandler()
         }
         satellites.commit();
         hdop.commit();
-        break;
-      case GPS_SENTENCE_GPGSV:
-        if (sentenceHasFix)
-        {
-          elevation.commit();
-          azimuth.commit();
-        }
-        snr.commit();
+        fix.commit();
         break;
       }
 
@@ -208,7 +200,6 @@ bool TinyGPSPlus::endOfTermHandler()
          p->commit();
       return true;
     }
-
     else
     {
       ++failedChecksumCount;
@@ -224,8 +215,6 @@ bool TinyGPSPlus::endOfTermHandler()
       curSentenceType = GPS_SENTENCE_GPRMC;
     else if (!strcmp(term, _GPGGAterm) || !strcmp(term, _GNGGAterm))
       curSentenceType = GPS_SENTENCE_GPGGA;
-    else if (!strcmp(term, _GPGSVterm))
-      curSentenceType = GPS_SENTENCE_GPGSV;
     else
       curSentenceType = GPS_SENTENCE_OTHER;
 
@@ -274,6 +263,7 @@ bool TinyGPSPlus::endOfTermHandler()
       break;
     case COMBINE(GPS_SENTENCE_GPGGA, 6): // Fix data (GPGGA)
       sentenceHasFix = term[0] > '0';
+      fix.set(term);
       break;
     case COMBINE(GPS_SENTENCE_GPGGA, 7): // Satellites used (GPGGA)
       satellites.set(term);
@@ -291,15 +281,6 @@ bool TinyGPSPlus::endOfTermHandler()
       {
         altitude_ellipsoid.set(altitude.value() + geoidal_separation.value());
       }
-      break;
-    case COMBINE(GPS_SENTENCE_GPGSV, 5): // Elevation
-      elevation.set(term);
-      break;
-    case COMBINE(GPS_SENTENCE_GPGSV, 6): // Azimuth
-      azimuth.set(term);
-      break;
-    case COMBINE(GPS_SENTENCE_GPGSV, 7): // SNR
-      snr.set(term);
       break;
   }
 
