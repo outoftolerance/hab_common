@@ -1,10 +1,11 @@
 #ifndef HardwareConfiguration_h
 #define HardwareConfiguration_h
 
+#define FRAM_CHIP_SELECT 5
 #define SD_CHIP_SELECT 6
-#define ARM_SWITCH 12
-#define SILENCE_SWITCH 12
-#define LED_EXTERNAL 12
-#define BUZZER_EXTERNAL 5
+#define BUZZER_EXTERNAL 16
+#define LED_STATUS_R 17
+#define LED_STATUS_G 18
+#define LED_STATUS_B 19
 
 #endif
