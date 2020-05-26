@@ -1,48 +1,79 @@
 #include "Telemetry.h"
 
 /*------------------------------Constructor Methods------------------------------*/
-Telemetry::Telemetry(IMU_TYPES imu_type)
+Telemetry::Telemetry()
 {
     gps_serial_ = NULL;
     gps_fix_status_ = false;
     altitude_base_is_set_ = false;
     altitude_base_ = 0;
-
-    switch(imu_type)
-    {
-        case IMU_TYPES::IMU_TYPE_ADAFRUIT_10DOF:
-            imu_ = new Imu_10dof();
-            break;
-        case IMU_TYPES::IMU_TYPE_ADAFRUIT_9DOF:
-            imu_ = new Imu_9dof();
-            break;
-    }
+    sensor_update_timer_.setInterval(SENSOR_UPDATE_INTERVAL);
 }
 
-Telemetry::Telemetry(IMU_TYPES imu_type, Stream* gps_serial) :
+Telemetry::Telemetry(Stream* gps_serial) :
     gps_serial_(gps_serial)
 {
-    switch(imu_type)
-    {
-        case IMU_TYPES::IMU_TYPE_ADAFRUIT_10DOF:
-            imu_ = new Imu_10dof();
-            break;
-        case IMU_TYPES::IMU_TYPE_ADAFRUIT_9DOF:
-            imu_ = new Imu_9dof();
-            break;
-    }
-    
     gps_serial_buffer_ = new Buffer(GPS_SERIAL_BUFFER_SIZE);
     gps_fix_status_ = false;
     altitude_base_is_set_ = false;
     altitude_base_ = 0;
+    sensor_update_timer_.setInterval(SENSOR_UPDATE_INTERVAL);
 }
 
-/*------------------------------Private Methods------------------------------*/
+/*------------------------------Public Methods------------------------------*/
 
-void Telemetry::update_()
+bool Telemetry::init()
 {
-    imu_->update();
+    //Initialise the GPS
+    if(gps_serial_ != NULL)
+    {
+        static_cast<HardwareSerial&>(*gps_serial_).begin(GPS_SERIAL_BAUD);
+    }
+
+    //Initialise each sensor
+    if(!imu_.begin())
+    {
+        return false;
+    }
+
+    if(!baro_.begin()) {
+        return false;
+    }
+
+    //Initialise the AHRS filter
+    if(!ahrs_.begin((float)(1.0/(SENSOR_UPDATE_INTERVAL))))
+    {
+        return false;
+    }
+
+    //Start the sensor update timer
+    if(!sensor_update_timer_.start())
+    {
+        return false;
+    }
+
+    //Everything initialized correctly
+    return true;
+}
+
+void Telemetry::update()
+{
+    if(sensor_update_timer_.check())
+    {
+        imu_.update();
+
+        SimpleUtils::AxisData accel;
+        SimpleUtils::AxisData gyro;
+        SimpleUtils::AxisData mag;
+
+        imu_.getAccelerometer(accel);
+        imu_.getGyroscope(gyro);
+        imu_.getMagnetometer(mag);
+
+        ahrs_.update(accel, gyro, mag);
+
+        sensor_update_timer_.reset();
+    }
 
     if(gps_serial_ != NULL)
     {
@@ -66,43 +97,22 @@ void Telemetry::update_()
     }
     else if(!altitude_base_is_set_)
     {
-        altitude_base_ = imu_->getBarometricAltitude();
+        altitude_base_ = baro_.readAltitude(SEALEVELPRESSURE_HPA);
         altitude_base_is_set_ = true;
     }
 }
 
-/*------------------------------Public Methods------------------------------*/
-
-bool Telemetry::init()
+bool Telemetry::get(SimpleUtils::TelemetryStruct& telemetry)
 {
-    //Initialise the GPS
-    if(gps_serial_ != NULL)
-    {
-        static_cast<HardwareSerial&>(*gps_serial_).begin(GPS_SERIAL_BAUD);
-    }
-
-    //Initialise each sensor
-    if(!imu_->begin())
-    {
-        return false;
-    }
-
-    //Everything initialized correctly
-    return true;
-}
-
-bool Telemetry::get(TelemetryStruct& telemetry)
-{
-    //Update all sensor data
-    update_();
-
     //Grab data not dependent on GPS
-    telemetry.altitude_barometric = imu_->getBarometricAltitude();
-    telemetry.roll = imu_->getRoll();
-    telemetry.pitch = imu_->getPitch();
-    telemetry.heading = imu_->getHeading();
-    telemetry.temperature = imu_->getTemperature();
-    telemetry.pressure = imu_->getPressure();
+    telemetry.roll = ahrs_.getRoll();
+    telemetry.pitch = ahrs_.getPitch();
+    telemetry.yaw = ahrs_.getYaw();
+    telemetry.heading = ahrs_.getYawDegrees();
+    telemetry.temperature = baro_.readTemperature();
+    telemetry.pressure = baro_.readPressure();
+    telemetry.humidity = baro_.readHumidity();
+    telemetry.altitude_barometric = baro_.readAltitude(SEALEVELPRESSURE_HPA);
 
     //Assign to output struct
     if(gps_serial_ != NULL)
@@ -154,17 +164,17 @@ bool Telemetry::get(TelemetryStruct& telemetry)
     return true;
 }
 
-bool Telemetry::getAccelerometerRaw(AxisData& accelerometer)
+bool Telemetry::getAccelerometerRaw(SimpleUtils::AxisData& accelerometer)
 {
     return false;
 }
 
-bool Telemetry::getGyroscopeRaw(AxisData& gyroscope)
+bool Telemetry::getGyroscopeRaw(SimpleUtils::AxisData& gyroscope)
 {
     return false;
 }
 
-bool Telemetry::getMagnetometerRaw(AxisData& magnetometer)
+bool Telemetry::getMagnetometerRaw(SimpleUtils::AxisData& magnetometer)
 {
     return false;
 }
@@ -207,9 +217,18 @@ float Telemetry::getGpsHdop()
     }
 }
 
-long Telemetry::getGpsDateTime()
+uint32_t Telemetry::getGpsUnixTime()
 {
-    return 0;
+    DateTime current_time(
+        gps_.date.year(),
+        gps_.date.month(),
+        gps_.date.day(),
+        gps_.time.hour(),
+        gps_.time.minute(),
+        gps_.time.second()
+        );
+
+    return current_time.unixtime();
 }
 
 bool Telemetry::resetBaseAltitude()
@@ -220,7 +239,7 @@ bool Telemetry::resetBaseAltitude()
     }
     else
     {
-        altitude_base_ = imu_->getBarometricAltitude();   
+        altitude_base_ = baro_.readAltitude(SEALEVELPRESSURE_HPA);   
     }
 
     return true;

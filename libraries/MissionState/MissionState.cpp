@@ -23,7 +23,7 @@ MissionState::~MissionState()
 	landing_timeout_.forceReset();
 }
 
-bool MissionState::update(const Telemetry::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
+bool MissionState::update(const SimpleUtils::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
 {
 	switch(current_mission_state_)
 	{

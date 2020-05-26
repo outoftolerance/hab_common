@@ -1,7 +1,7 @@
 #ifndef MISSION_STATE_H
 #define MISSION_STATE_H
 
-#include <Telemetry.h>
+#include <SimpleUtils.h>
 #include <Timer.h>
 
 /**
@@ -96,7 +96,7 @@ class MissionState
          * @brief Update the mission state with latest information
          * @return bool True if successfully updated, false if error reported
          */
-        bool update(const Telemetry::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch);
+        bool update(const SimpleUtils::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch);
 
         /**
          * @brief Allows setting of the mission state to a particular state

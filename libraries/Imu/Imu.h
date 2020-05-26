@@ -1,26 +1,28 @@
 #ifndef Imu_h
 #define Imu_h
 
-/**
- * @brief      Defines different IMU boards supported
- */
-enum IMU_TYPES {
-	IMU_TYPE_ADAFRUIT_10DOF = 0,
-	IMU_TYPE_ADAFRUIT_9DOF
-};
+#include <SimpleUtils.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_FXOS8700.h>
+#include <Adafruit_FXAS21002C.h>
 
 class Imu
 {
 	public:
-		virtual bool begin();
-		virtual bool update();
+		Imu();
+		bool begin();
+		bool update();
 
-		virtual float getRoll();
-		virtual float getPitch();
-		virtual float getHeading();
-		virtual float getTemperature();
-		virtual float getPressure();
-		virtual float getBarometricAltitude();
+		bool getAccelerometer(SimpleUtils::AxisData& accel);
+        bool getGyroscope(SimpleUtils::AxisData& gyro);
+        bool getMagnetometer(SimpleUtils::AxisData& mag);
+	private:
+		Adafruit_FXAS21002C gyroscope_ = Adafruit_FXAS21002C(0x0021002C);
+        Adafruit_FXOS8700 accelerometer_magnetometer_ = Adafruit_FXOS8700(0x8700A, 0x8700B);
+
+        sensors_event_t gyroscope_data_;
+        sensors_event_t accelerometer_data_;
+        sensors_event_t magnetometer_data_;
 };
 
 #endif
