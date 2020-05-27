@@ -4,7 +4,6 @@ MissionState::MissionState()
 {
 	descent_timeout_.setInterval(DESCENT_DETECTION_TIMEOUT_INTERVAL);
 	recovered_timeout_.setInterval(RECOVERED_INNACTIVITY_TIMEOUT_INTERVAL);
-	silence_timeout_.setInterval(SILENCE_DETECTION_TIMEOUT_INTERVAL);
 	landing_timeout_.setInterval(LANDING_DETECTION_TIMEOUT_INTERVAL);
 }
 
@@ -16,33 +15,20 @@ MissionState::~MissionState()
 	recovered_timeout_.stop();
 	recovered_timeout_.forceReset();
 
-	silence_timeout_.stop();
-	silence_timeout_.forceReset();
-
 	landing_timeout_.stop();
 	landing_timeout_.forceReset();
 }
 
-bool MissionState::update(const SimpleUtils::TelemetryStruct& telemetry, const bool launch_switch, const bool silence_switch)
+bool MissionState::update(const SimpleUtils::TelemetryStruct& telemetry)
 {
 	switch(current_mission_state_)
 	{
 		case MISSION_STATES::STAGING:
-			if(launch_switch == true)
-			{
-				current_mission_state_ = MISSION_STATES::TAKEOFF;
-			}
-			break;
 		case MISSION_STATES::TAKEOFF:
-			if(launch_switch == false)
-			{
-				current_mission_state_ = MISSION_STATES::STAGING;
-			}
-			else if(telemetry.altitude_relative >= TERMINAL_ALTITUDE)
+			if(telemetry.altitude_relative >= TERMINAL_ALTITUDE)
 			{
 				current_mission_state_ = MISSION_STATES::ASCENDING;
 			}
-			break;
 		case MISSION_STATES::ASCENDING:
 			if(telemetry.altitude < previous_altitude_)
 			{
@@ -106,31 +92,7 @@ bool MissionState::update(const SimpleUtils::TelemetryStruct& telemetry, const b
 			previous_altitude_ = telemetry.altitude;
 			break;
 		case MISSION_STATES::RECOVERY:
-			if(silence_switch)
-			{
-				if(silence_timeout_.isStarted())
-				{
-					if(silence_timeout_.check())
-					{
-						current_mission_state_ = MISSION_STATES::RECOVERED;
-						silence_timeout_.stop();
-						silence_timeout_.reset();
-					}
-				}
-				else
-				{
-					silence_timeout_.start();
-				}
-			}
-			else
-			{
-				if(silence_timeout_.isStarted())
-				{
-					silence_timeout_.stop();
-					silence_timeout_.forceReset();
-				}
-			}
-			break;
+			//Todo, how to detect recovery?
 		case MISSION_STATES::RECOVERED:
 			if(recovered_timeout_.isStarted())
 			{
@@ -172,49 +134,49 @@ void MissionState::getFunction(MissionStateFunction& function)
 			function.telemetry_log_interval = STAGING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = STAGING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = STAGING_BEEPER_ENABLED;
-			function.led_enabled = STAGING_LED_ENABLED;
+			function.strobe_enabled = STAGING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::TAKEOFF:
 			function.telemetry_check_interval = TAKEOFF_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = TAKEOFF_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = TAKEOFF_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = TAKEOFF_BEEPER_ENABLED;
-			function.led_enabled = TAKEOFF_LED_ENABLED;
+			function.strobe_enabled = TAKEOFF_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::ASCENDING:
 			function.telemetry_check_interval = ASCENDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = ASCENDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = ASCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = ASCENDING_BEEPER_ENABLED;
-			function.led_enabled = ASCENDING_LED_ENABLED;
+			function.strobe_enabled = ASCENDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::DESCENDING:
 			function.telemetry_check_interval = DESCENDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = DESCENDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = DESCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = DESCENDING_BEEPER_ENABLED;
-			function.led_enabled = DESCENDING_LED_ENABLED;
+			function.strobe_enabled = DESCENDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::LANDING:
 			function.telemetry_check_interval = LANDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = LANDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = LANDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = LANDING_BEEPER_ENABLED;
-			function.led_enabled = LANDING_LED_ENABLED;
+			function.strobe_enabled = LANDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERY:
 			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
-			function.led_enabled = RECOVERY_LED_ENABLED;
+			function.strobe_enabled = RECOVERY_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERED:
 			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
-			function.led_enabled = RECOVERY_LED_ENABLED;
+			function.strobe_enabled = RECOVERY_STROBE_ENABLED;
 			break;
 	}
 }

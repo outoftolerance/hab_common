@@ -1,5 +1,5 @@
-#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_LENGTH 14
-#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_BYTE_LENGTH 56
+#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_LENGTH 15
+#define MESSAGE_REPORT_TELEMETRY_PAYLOAD_BYTE_LENGTH 60
 
 typedef struct smpMessageReportTelemetry
 {
@@ -13,6 +13,7 @@ typedef struct smpMessageReportTelemetry
     FloatUnion_t velocity_vertical;
     FloatUnion_t roll;
     FloatUnion_t pitch;
+    FloatUnion_t yaw;
     FloatUnion_t heading;
     FloatUnion_t course;
 };
@@ -96,6 +97,13 @@ static inline void smpMessageReportTelemetryEncode(uint8_t node_id, uint8_t node
     }
 
     data_position += sizeof(telemetry.pitch);
+
+    for (bytes = 0; bytes < sizeof(telemetry.yaw); bytes++)
+    {
+        message.payload[data_position + bytes] = telemetry.yaw.bytes[bytes];
+    }
+
+    data_position += sizeof(telemetry.yaw);
 
     for (bytes = 0; bytes < sizeof(telemetry.heading); bytes++)
     {
@@ -198,6 +206,14 @@ static inline void smpMessageReportTelemetryDecode(hdlcMessage& message, smpMess
     }
 
     data_position += sizeof(telemetry.pitch);
+
+    //Yaw
+    for (bytes = 0; bytes < sizeof(telemetry.yaw); bytes++)
+    {
+        telemetry.yaw.bytes[bytes] = message.payload[data_position + bytes];
+    }
+
+    data_position += sizeof(telemetry.yaw);
 
     //Heading
     for (bytes = 0; bytes < sizeof(telemetry.heading); bytes++)
