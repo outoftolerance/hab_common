@@ -1,7 +1,8 @@
 #include "Telemetry.h"
 
 /*------------------------------Constructor Methods------------------------------*/
-Telemetry::Telemetry()
+Telemetry::Telemetry(Log* logger):
+    logger_(logger)
 {
     gps_serial_ = NULL;
     gps_fix_status_ = false;
@@ -10,8 +11,9 @@ Telemetry::Telemetry()
     sensor_update_timer_.setInterval(SENSOR_UPDATE_INTERVAL);
 }
 
-Telemetry::Telemetry(Stream* gps_serial) :
-    gps_serial_(gps_serial)
+Telemetry::Telemetry(Log* logger, Stream* gps_serial) :
+    gps_serial_(gps_serial),
+    logger_(logger)
 {
     gps_serial_buffer_ = new Buffer(GPS_SERIAL_BUFFER_SIZE);
     gps_fix_status_ = false;
@@ -33,22 +35,26 @@ bool Telemetry::init()
     //Initialise each sensor
     if(!imu_.begin())
     {
+        logger_->event(LOG_LEVELS::DEBUG, "Failed to initialise IMU!");
         return false;
     }
 
     if(!baro_.begin()) {
+        logger_->event(LOG_LEVELS::DEBUG, "Failed to initialise Barometer!");
         return false;
     }
 
     //Initialise the AHRS filter
     if(!ahrs_.begin((float)(1.0/(SENSOR_UPDATE_INTERVAL))))
     {
+        logger_->event(LOG_LEVELS::DEBUG, "Failed to initialise AHRS!");
         return false;
     }
 
     //Start the sensor update timer
     if(!sensor_update_timer_.start())
     {
+        logger_->event(LOG_LEVELS::DEBUG, "Failed to initialise Sensor Update Timer!");
         return false;
     }
 
@@ -184,13 +190,13 @@ bool Telemetry::getBarometerRaw(float& data)
     return false;
 }
 
-int Telemetry::getGpsString(char string[])
+int Telemetry::getGpsString(char string[], const unsigned int string_length)
 {
     int i = 0;
-
+    
     if(gps_serial_ != NULL)
     {
-        while(gps_serial_buffer_->available())
+        while(gps_serial_buffer_->available() && i < string_length)
         {
             string[i] = gps_serial_buffer_->pop();
             i++;

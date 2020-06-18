@@ -11,6 +11,7 @@
 #include <Adafruit_BME280.h>
 #include <SimpleAHRS.h>
 #include <SimpleUtils.h>
+#include <Log.h>
 
 #define GPS_SERIAL_BAUD 9600
 #define GPS_SERIAL_BUFFER_SIZE 64
@@ -26,13 +27,13 @@ class Telemetry
         /*
          * @brief      Telemetry class constructor without GPS
          */
-        Telemetry();
+        Telemetry(Log* logger);
 
         /**
          * @brief      Telemetry class constructor with GPS
          * @param      gps_stream  Pointer to the Stream object for the GPS serial port
          */
-        Telemetry(Stream* gps_stream);
+        Telemetry(Log* logger, Stream* gps_stream);
 
         /**
          * @brief      Initialises all variables and objects to their default value/state
@@ -84,7 +85,7 @@ class Telemetry
          * @param      string  Pointer to the output string
          * @return     Number of chars returned
          */
-        int getGpsString(char string[]);
+        int getGpsString(char string[], const unsigned int string_length);
 
         /**
          * @brief      Gets the gps fix status
@@ -115,6 +116,7 @@ class Telemetry
         bool resetBaseAltitude();
 
     private:
+        Log* logger_;                                   /**< Log object */
         TinyGPSPlus gps_;                               /**< Defines Tiny GPS object */
         Stream* gps_serial_;                            /**< Defines Stream object for GPS device serial port */
         Buffer* gps_serial_buffer_;                     /**< Buffer to store received GPS serial data in for sending out to other devices */

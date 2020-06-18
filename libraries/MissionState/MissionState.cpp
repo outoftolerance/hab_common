@@ -130,49 +130,42 @@ void MissionState::getFunction(MissionStateFunction& function)
 	switch(current_mission_state_)
 	{
 		case MISSION_STATES::STAGING:
-			function.telemetry_check_interval = STAGING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = STAGING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = STAGING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = STAGING_BEEPER_ENABLED;
 			function.strobe_enabled = STAGING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::TAKEOFF:
-			function.telemetry_check_interval = TAKEOFF_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = TAKEOFF_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = TAKEOFF_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = TAKEOFF_BEEPER_ENABLED;
 			function.strobe_enabled = TAKEOFF_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::ASCENDING:
-			function.telemetry_check_interval = ASCENDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = ASCENDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = ASCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = ASCENDING_BEEPER_ENABLED;
 			function.strobe_enabled = ASCENDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::DESCENDING:
-			function.telemetry_check_interval = DESCENDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = DESCENDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = DESCENDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = DESCENDING_BEEPER_ENABLED;
 			function.strobe_enabled = DESCENDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::LANDING:
-			function.telemetry_check_interval = LANDING_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = LANDING_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = LANDING_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = LANDING_BEEPER_ENABLED;
 			function.strobe_enabled = LANDING_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERY:
-			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;
 			function.strobe_enabled = RECOVERY_STROBE_ENABLED;
 			break;
 		case MISSION_STATES::RECOVERED:
-			function.telemetry_check_interval = RECOVERY_TELEMETRY_CHECK_INTERVAL;
 			function.telemetry_log_interval = RECOVERY_TELEMETRY_LOG_INTERVAL;
 			function.telemetry_report_interval = RECOVERY_TELEMETRY_REPORT_INTERVAL;
 			function.beeper_enabled = RECOVERY_BEEPER_ENABLED;

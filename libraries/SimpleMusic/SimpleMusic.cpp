@@ -3,7 +3,7 @@
 SimpleMusic::SimpleMusic(int pin):
 pin_(pin)
 {
-
+	sound_on_ = false;
 }
 
 bool SimpleMusic::play()
@@ -15,7 +15,8 @@ bool SimpleMusic::play()
 		rate_timer_.setInterval(sos_track_[track_location_]);
 		rate_timer_.start();
 
-		digitalWrite(pin_, HIGH);
+		tone(pin_, FREQUENCY);
+		sound_on_ = true;
 
 		track_location_++;
 	}
@@ -24,33 +25,50 @@ bool SimpleMusic::play()
 	if(rate_timer_.check())
 	{
 		//Toggle pin
-		digitalWrite(pin_, !digitalRead(pin_));
+		if(sound_on_)
+		{
+			noTone(pin_);		//If there is no tone() playing, noTone() crashes the program! Need the if statement to stop this.
+			sound_on_ = false;
+		}
+		else
+		{
+			tone(pin_, FREQUENCY);
+			sound_on_ = true;
+		}
 
 		//Set timer for next interval
 		rate_timer_.stop();
 		rate_timer_.setInterval(sos_track_[track_location_]);
+		rate_timer_.forceReset();
 		rate_timer_.start();
 
 		//Move forward in track
 		track_location_++;
 
 		//If we reach the end, loop to beginning again
-		if(track_location_ > sizeof(sos_track_)/sizeof(int))
+		if(track_location_ >= sizeof(sos_track_)/sizeof(int))
 		{
 			track_location_ = 0;
 		}
 	}
+
+	return true;
 }
 
 bool SimpleMusic::stop()
 {
 	//Turn off
-	digitalWrite(pin_, LOW);
+	if(sound_on_)
+	{
+		noTone(pin_);		//If there is no tone() playing, noTone() crashes the program! Need the if statement to stop this.
+		sound_on_ = false;
+	}
 
 	//Stop timer
 	rate_timer_.stop();
-	rate_timer_.forceReset();
 
 	//Reset track location to start
 	track_location_ = 0;
+
+	return true;
 }

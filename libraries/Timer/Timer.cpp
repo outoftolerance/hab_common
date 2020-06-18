@@ -65,19 +65,12 @@ bool Timer::stop()
 
 bool Timer::check()
 {
-	if(!is_running_)
-	{
-		return false;
-	}
-
-	if(millis() - last_reset_ > interval_)
+	if(is_running_ && millis() - last_reset_ > interval_)
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 bool Timer::reset()
@@ -94,5 +87,5 @@ bool Timer::reset()
 bool Timer::forceReset()
 {
 	last_reset_ = millis();
-	return true;	
+	return true;
 }

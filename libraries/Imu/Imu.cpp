@@ -10,12 +10,14 @@ bool Imu::begin()
     //Start gyroscope
     if(!gyroscope_.begin())
     {
+        Serial.println("Failed to initialise Gyroscope!");
         return false;
     }
 
     //Start accel and mag
     if(!accelerometer_magnetometer_.begin(ACCEL_RANGE_4G))
     {
+        Serial.println("Failed to initialise Acceleromter/Magnetometer!");
         return false;
     }
 
